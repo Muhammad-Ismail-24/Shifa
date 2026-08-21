@@ -1,44 +1,5 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.pyo
-*.pyd
-.Python
-.venv/
-venv/
-ENV/
-env/
-*.egg-info/
-dist/
-build/
-*.log
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-*.env
-
-# Node / React / Vite
-node_modules/
-dist/
-.cache/
-.parcel-cache/
-*.tsbuildinfo
-
-# Editor / OS
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Data / Vector DB
-chroma_data/
-*.sqlite
-*.db
-
-# Misc
-*.pyc
+node_modules
+.venv
+.env*
+__pycache__
+dist
