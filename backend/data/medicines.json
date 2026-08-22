@@ -1,1 +1,314 @@
-{}
+{
+  "Common Cold": {
+    "urdu_name": "نزلہ زکام",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "ہر 6 گھنٹے بعد 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "Rigix",
+        "name_urdu": "رجکس",
+        "dosage_urdu": "رات میں 1 گولی",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "ٹھنڈا پانی، کھٹی چیزیں",
+    "see_doctor": false,
+    "disclaimer_urdu": "یہ صرف عمومی معلومات ہے۔ اگر بخار 3 دن سے زیادہ رہے تو ڈاکٹر سے ملیں۔"
+  },
+  "Influenza": {
+    "urdu_name": "انفلوئنزا (فلو)",
+    "medicines": [
+      {
+        "name": "Panadol CF",
+        "name_urdu": "پیناڈول سی ایف",
+        "dosage_urdu": "دن میں 2 سے 3 بار",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "باہر نکلنے اور رش سے گریز کریں",
+    "see_doctor": true,
+    "disclaimer_urdu": "یہ صرف عمومی معلومات ہے۔ فلو کی شدت میں ڈاکٹر سے رجوع کریں۔"
+  },
+  "Typhoid Fever": {
+    "urdu_name": "ٹائیفائیڈ",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "ہر 6 گھنٹے میں 1 گولی (صرف بخار کے لیے)",
+        "otc": true
+      },
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "ہر دست کے بعد 1 گلاس",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "باہر کا کھانا، کچا پانی",
+    "see_doctor": true,
+    "disclaimer_urdu": "یہ خطرناک بیماری ہو سکتی ہے۔ ٹائیفائیڈ کے علاج کے لیے ڈاکٹر سے اینٹی بائیوٹک لکھوائیں۔"
+  },
+  "Dengue Fever": {
+    "urdu_name": "ڈینگی بخار",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "بخار کے لیے دن میں 3 سے 4 بار 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "پانی کی کمی سے بچنے کے لیے زیادہ سے زیادہ پیئیں",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "اسپرین اور بروفن ہرگز استعمال نہ کریں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "ڈینگی جان لیوا ہو سکتا ہے۔ فوری طور پر بلڈ ٹیسٹ اور ڈاکٹر سے معائنہ کروائیں۔"
+  },
+  "Malaria": {
+    "urdu_name": "ملیریا",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "درد اور بخار کی صورت میں 1 گولی",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "مچھروں سے بچیں، رات کو مچھر دانی استعمال کریں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "ملیریا کے لیے مخصوص دوا ڈاکٹر کی ہدایت کے مطابق لیں۔"
+  },
+  "Tuberculosis": {
+    "urdu_name": "ٹی بی (تپ دق)",
+    "medicines": [],
+    "avoid_urdu": "دوسروں کے قریب کھانسنے سے پرہیز کریں، ماسک پہنیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "ٹی بی کا علاج لمبا اور مخصوص ہوتا ہے۔ براہ کرم فوری طور پر ڈاکٹر یا قریبی ٹی بی مرکز سے رابطہ کریں۔"
+  },
+  "Gastroenteritis": {
+    "urdu_name": "گیسٹرو / ہیضہ",
+    "medicines": [
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "ہر الٹی یا دست کے بعد 1 گلاس",
+        "otc": true
+      },
+      {
+        "name": "Gravinate",
+        "name_urdu": "گریوینیٹ",
+        "dosage_urdu": "الٹی روکنے کے لیے 1 گولی",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "ٹھوس غذا، مسالے دار کھانا، دودھ",
+    "see_doctor": true,
+    "disclaimer_urdu": "اگر الٹیاں نہ رکیں یا پانی کی شدید کمی ہو تو فوراً ہسپتال جائیں۔"
+  },
+  "Food Poisoning": {
+    "urdu_name": "فوڈ پوائزننگ",
+    "medicines": [
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "پانی کی کمی پوری کرنے کے لیے زیادہ سے زیادہ پیئیں",
+        "otc": true
+      },
+      {
+        "name": "Flagyl (Metronidazole)",
+        "name_urdu": "فلیجل",
+        "dosage_urdu": "طبی مشورے سے دن میں 2 بار",
+        "otc": false
+      }
+    ],
+    "avoid_urdu": "باہر کا کھانا، بھاری اور مرغن غذائیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "اگر پاخانے میں خون آئے یا شدید درد ہو تو ڈاکٹر سے رجوع کریں۔"
+  },
+  "Hypertension": {
+    "urdu_name": "ہائی بلڈ پریشر",
+    "medicines": [],
+    "avoid_urdu": "نمک، چکنائی، اور ذہنی دباؤ سے پرہیز کریں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "بلڈ پریشر کی دوائی ہمیشہ ڈاکٹر کی ہدایت کے مطابق شروع کریں۔"
+  },
+  "Diabetes Type 2": {
+    "urdu_name": "ذیابیطس (شوگر)",
+    "medicines": [],
+    "avoid_urdu": "چینی، میٹھی چیزیں، اور زیادہ کاربوہائیڈریٹ والے کھانے۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "شوگر کی دوا اور خوراک کا تعین ڈاکٹر سے کروائیں۔"
+  },
+  "Chickenpox": {
+    "urdu_name": "خسرہ (چکن پاکس)",
+    "medicines": [
+      {
+        "name": "Calamine Lotion",
+        "name_urdu": "کیلامین لوشن",
+        "dosage_urdu": "دن میں 2 سے 3 بار دانوں پر لگائیں",
+        "otc": true
+      },
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "بخار کے لیے ضرورت کے وقت",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "دانوں کو کھرچنے سے گریز کریں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "اگر سانس لینے میں دشواری ہو یا تیز بخار رہے تو ڈاکٹر سے ملیں۔"
+  },
+  "Measles": {
+    "urdu_name": "خسرہ",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "بخار کی شدت کم کرنے کے لیے",
+        "otc": true
+      },
+      {
+        "name": "Vitamin A Drops",
+        "name_urdu": "وٹامن اے قطرے",
+        "dosage_urdu": "ڈاکٹر کے مشورے سے",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "دوسرے بچوں سے دور رکھیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "خسرہ بچوں کے لیے خطرناک ہو سکتا ہے، فوراً ڈاکٹر کو دکھائیں۔"
+  },
+  "Hepatitis A": {
+    "urdu_name": "ہیپاٹائٹس اے (یرقان)",
+    "medicines": [
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "پانی کی کمی بچانے کے لیے",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "باہر کا کھانا، کچا پانی، اور مرغن غذائیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "زیادہ تر آرام اور اچھی خوراک سے ٹھیک ہوتا ہے، لیکن ڈاکٹر کا معائنہ ضروری ہے۔"
+  },
+  "Hepatitis B": {
+    "urdu_name": "ہیپاٹائٹس بی (کالا یرقان)",
+    "medicines": [],
+    "avoid_urdu": "خون کا عطیہ نہ دیں، استعمال شدہ سرنج سے بچیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "ہیپاٹائٹس بی کا باقاعدہ علاج اور نگرانی ضروری ہے۔ فوراً ماہر ڈاکٹر سے ملیں۔"
+  },
+  "Pneumonia": {
+    "urdu_name": "نمونیا",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "بخار کے لیے",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "سردی، دھواں، اور گرد آلود جگہوں سے بچیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "نمونیا کے لیے اینٹی بائیوٹک درکار ہوتی ہے، فوری طور پر ڈاکٹر سے علاج شروع کروائیں۔"
+  },
+  "Bronchitis": {
+    "urdu_name": "برونکائٹس (سانس کی نالی کی سوزش)",
+    "medicines": [
+      {
+        "name": "Panadol",
+        "name_urdu": "پیناڈول",
+        "dosage_urdu": "درد اور ہلکے بخار کے لیے",
+        "otc": true
+      },
+      {
+        "name": "Steam Inhalation",
+        "name_urdu": "بھاپ لینا",
+        "dosage_urdu": "دن میں 2 سے 3 بار",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "سگریٹ نوشی، ٹھنڈا پانی اور دھول۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "اگر سانس لینے میں دشواری ہو تو فوری طور پر ڈاکٹر کو دکھائیں۔"
+  },
+  "Urinary Tract Infection": {
+    "urdu_name": "پیشاب کی نالی کا انفیکشن (UTI)",
+    "medicines": [
+      {
+        "name": "Cranberry Sachet",
+        "name_urdu": "کرین بیری ساشے",
+        "dosage_urdu": "دن میں 1 سے 2 بار پانی میں ملا کر",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "پیشاب روکنے سے گریز کریں، مسالے دار کھانے نہ کھائیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "باقاعدہ علاج کے لیے پیشاب کا ٹیسٹ اور ڈاکٹر سے اینٹی بائیوٹک لینا ضروری ہے۔"
+  },
+  "Conjunctivitis": {
+    "urdu_name": "آشوب چشم (آنکھ آنا)",
+    "medicines": [
+      {
+        "name": "Artificial Tears",
+        "name_urdu": "مصنوعی آنسو (قطرے)",
+        "dosage_urdu": "آنکھ میں چبھن کے لیے دن میں 3 بار",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "آنکھوں کو ملنے سے گریز کریں، تولیہ الگ رکھیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "آنکھ کا معاملہ حساس ہے۔ اگر بینائی میں دھندلا پن ہو تو فوراً ڈاکٹر سے ملیں۔"
+  },
+  "Scabies": {
+    "urdu_name": "خارش (سکیبیز)",
+    "medicines": [
+      {
+        "name": "Permethrin Lotion",
+        "name_urdu": "پرمیتھرین لوشن",
+        "dosage_urdu": "ڈاکٹر کے مشورے سے گردن سے نیچے پورے جسم پر لگائیں",
+        "otc": true
+      },
+      {
+        "name": "Rigix",
+        "name_urdu": "رجکس",
+        "dosage_urdu": "خارش کم کرنے کے لیے رات میں 1 گولی",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "متاثرہ شخص کے کپڑے اور بستر استعمال نہ کریں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "گھر کے تمام افراد کا ایک ساتھ علاج ضروری ہے۔"
+  },
+  "Anemia": {
+    "urdu_name": "خون کی کمی (انیمیا)",
+    "medicines": [
+      {
+        "name": "Folic Acid",
+        "name_urdu": "فولک ایسڈ",
+        "dosage_urdu": "روزانہ 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "Iron Supplements",
+        "name_urdu": "آئرن کی گولی",
+        "dosage_urdu": "ڈاکٹر کے مشورے سے",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "چائے کو کھانے کے فوراً بعد پینے سے گریز کریں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "خون کی کمی کی اصل وجہ جاننے کے لیے ٹیسٹ اور ڈاکٹر سے معائنہ ضروری ہے۔"
+  }
+}
