@@ -9,7 +9,7 @@ from google.api_core.exceptions import ResourceExhausted
 from config.settings import settings
 from utils.logger import logger
 
-genai.configure(api_key=settings.gemini_api_key)
+genai.configure(api_key=settings.GEMINI_API_KEY)
 
 # ---------------------------------------------------------------------------
 # Fallback sequence: cheapest/fastest first → most capable last.

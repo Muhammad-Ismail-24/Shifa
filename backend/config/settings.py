@@ -1,16 +1,12 @@
-# Loads all env vars via pydantic BaseSettings
-"""Configuration settings for the Shifa backend loaded via Pydantic."""
+"""
+Application settings loaded from environment variables via pydantic-settings.
+"""
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables or .env file."""
-
-    gemini_api_key: str
-    google_places_api_key: str
-    qdrant_url: str
-    qdrant_api_key: str
+    """Loads all required env vars; reads from .env file automatically."""
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -18,5 +14,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    GEMINI_API_KEY: str = ""
+    GOOGLE_PLACES_API_KEY: str = ""
+    QDRANT_URL: str = ""
+    QDRANT_API_KEY: str = ""
 
+
+# Singleton — import this instance everywhere
 settings = Settings()

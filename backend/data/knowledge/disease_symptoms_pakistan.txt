@@ -1,0 +1,378 @@
+DISEASE_SYMPTOMS_PAKISTAN.TXT
+Knowledge Base: Top 25 Diseases in Pakistan — Symptoms, Severity, Emergency Signs, Demographics
+Compiled for RAG ingestion. Sources cited per entry. Last compiled: August 2026.
+DISCLAIMER: This file is for informational/triage-support purposes only. It does not replace
+professional medical diagnosis. Any user-facing system built on this data must direct users
+with severe/emergency symptoms to seek immediate in-person care (Rescue 1122 in Punjab/KP,
+or nearest hospital emergency department).
+
+Primary epidemiological sources used across this file:
+[GBD1] IHME/Lancet Global Health — "The state of health in Pakistan and its provinces and
+   territories, 1990–2019: GBD 2019" (Jan 2023) — https://www.healthdata.org
+[WHO1] WHO Global Tuberculosis Report 2025 (Pakistan country data)
+[WHO2] WHO Data Portal — Pakistan country profile — https://data.who.int/countries/586
+[NIH1] Qureshi et al., "Hepatitis B and hepatitis C in Pakistan: prevalence and risk factors,"
+   PMC/NIH — https://pmc.ncbi.nlm.nih.gov/articles/PMC2651958/
+[NIH2] "Barriers and Strategies for Hepatitis B and C Elimination in Pakistan," J Infect Dis,
+   Oxford Academic, 2023 — https://academic.oup.com/jid
+[IMCI] WHO/UNICEF Integrated Management of Childhood Illness (IMCI) danger-sign guidelines;
+   WHO Pocket Book of Hospital Care for Children (ETAT triage) — https://www.ncbi.nlm.nih.gov/books/NBK154450/
+[DRAP] Drug Regulatory Authority of Pakistan, National Essential Medicine List 2025
+
+================================================================================
+1. ISCHEMIC HEART DISEASE (IHD) / HEART ATTACK (Dil Ka Daura)
+================================================================================
+English symptoms: Chest pain or pressure, pain radiating to left arm/jaw/back, shortness of
+breath, sweating, nausea, fatigue.
+Urdu symptoms: سینے میں درد یا دباؤ (seenay mein dard ya dabao), بائیں بازو میں درد (baayen
+baazu mein dard), سانس پھولنا (saans phoolna), پسینہ آنا (paseena aana), متلی (matli)
+Severity: Severe to Emergency
+Emergency warning signs: Crushing central chest pain >15 minutes, pain with sweating and
+breathlessness, fainting, irregular/racing heartbeat — call for emergency transport immediately.
+Affected demographics: Adults 40+, higher risk in males, urban populations, diabetics,
+hypertensive and smoking populations.
+Source: [GBD1] — ischemic heart disease listed among the top five leading causes of premature
+mortality in Pakistan in 2019.
+
+================================================================================
+2. STROKE (Falij / Fatoor)
+================================================================================
+English symptoms: Sudden weakness/numbness of face, arm, or leg (usually one side), slurred
+speech, confusion, sudden severe headache, vision loss, loss of balance.
+Urdu symptoms: اچانک ایک طرف کمزوری (achanak aik taraf kamzori), بولنے میں دقت (bolne mein
+diqqat), چہرے کا ٹیڑھا ہونا (chehray ka terha hona), شدید سر درد (shadeed sar dard)
+Severity: Emergency
+Emergency warning signs: FAST signs — Face drooping, Arm weakness, Speech difficulty, Time to
+call emergency services; sudden loss of consciousness.
+Affected demographics: Adults over 50, hypertensive patients, diabetics; slightly more common
+in men but significant burden in women too.
+Source: [GBD1] — stroke among top five causes of premature mortality nationally.
+
+================================================================================
+3. NEONATAL DISORDERS / BIRTH ASPHYXIA & PREMATURITY (Nomulodi Bachay ki Bimari)
+================================================================================
+English symptoms (newborn): Difficulty breathing, weak/absent cry, poor feeding, low body
+temperature, bluish skin (cyanosis), lethargy, convulsions.
+Urdu symptoms: سانس لینے میں دقت (saans lenay mein diqqat), دودھ نہ پینا (doodh na peena),
+جسم کا نیلا ہونا (jisam ka neela hona), سستی (susti)
+Severity: Emergency (in newborns, always treat as high-risk)
+Emergency warning signs: Any newborn not breathing well, not feeding, convulsing, or
+unresponsive needs immediate hospital care.
+Affected demographics: Neonates (0–28 days), especially in rural areas with limited access to
+skilled birth attendants.
+Source: [GBD1] — neonatal disorders were the number one cause of premature mortality in
+Pakistan in 2019.
+
+================================================================================
+4. DIARRHEAL DISEASE / ACUTE GASTROENTERITIS (Dast / Ishaal)
+================================================================================
+English symptoms: Frequent loose/watery stools, abdominal cramps, vomiting, fever, signs of
+dehydration.
+Urdu symptoms: پتلے دست (patlay dast), پیٹ میں مروڑ (pait mein maror), قے (qai), بخار (bukhar)
+Severity: Mild to Emergency (depends on dehydration level)
+Emergency warning signs: Sunken eyes, no urination for 6+ hours, extreme thirst or inability to
+drink, lethargy/unconsciousness, blood in stool — signs of severe dehydration requiring
+immediate IV fluids.
+Affected demographics: Children under 5 disproportionately affected; also common in adults
+during monsoon/flood season due to contaminated water.
+Source: [GBD1] — diarrheal diseases among top five causes of premature mortality in Pakistan.
+
+================================================================================
+5. LOWER RESPIRATORY INFECTIONS / PNEUMONIA (Nimonia)
+================================================================================
+English symptoms: Cough, fever, fast or difficult breathing, chest indrawing, chills.
+Urdu symptoms: کھانسی (khansi), بخار (bukhar), سانس تیز چلنا (saans tez chalna), سینہ دھنسنا
+(seena dhansna)
+Severity: Moderate to Emergency
+Emergency warning signs (IMCI danger signs): Chest indrawing, grunting, inability to
+drink/breastfeed, bluish lips, oxygen saturation dropping.
+Affected demographics: Young children (leading killer of under-5s globally with pneumonia),
+elderly, and malnourished individuals.
+Source: [GBD1]; [IMCI] danger-sign criteria for severe pneumonia.
+
+================================================================================
+6. TUBERCULOSIS (TB) (Tapedik / TB)
+================================================================================
+English symptoms: Cough lasting more than 2 weeks, blood in sputum, night sweats, weight loss,
+fever, fatigue.
+Urdu symptoms: دو ہفتوں سے زیادہ کھانسی (do haftoun se zyada khansi), رات کو پسینہ آنا (raat
+ko paseena aana), وزن کم ہونا (wazan kam hona), بلغم میں خون (balgham mein khoon)
+Severity: Moderate to Severe
+Emergency warning signs: Coughing up large amounts of blood, severe difficulty breathing,
+extreme weakness — refer urgently.
+Affected demographics: All ages; Pakistan is among the top TB-burden countries. Higher risk in
+crowded housing, malnutrition, and immunocompromised individuals.
+Source: [WHO1] — Pakistan accounted for approximately 6.3% of global TB cases in 2024, with an
+estimated 670,000 new cases and roughly 51,000 TB deaths annually.
+
+================================================================================
+7. HEPATITIS B (Kaala Yarqaan / Hepatitis B)
+================================================================================
+English symptoms: Fatigue, jaundice (yellow skin/eyes), dark urine, abdominal pain, nausea,
+loss of appetite; often asymptomatic for years.
+Urdu symptoms: جسم کا زرد ہونا (jism ka zard hona), گہرا پیشاب (gehra peshab), تھکاوٹ
+(thakawat), بھوک نہ لگنا (bhook na lagna)
+Severity: Mild (often silent) to Severe (in chronic liver disease/cirrhosis)
+Emergency warning signs: Severe abdominal swelling, confusion, vomiting blood, deep jaundice —
+signs of liver failure requiring urgent hospital care.
+Affected demographics: General population; higher prevalence linked to unsafe injections,
+transfusions, and unscreened blood products.
+Source: [NIH2] — general-population hepatitis B prevalence in Pakistan estimated at 1.6%, with
+about 12,000 deaths/year attributed to HBV and its complications.
+
+================================================================================
+8. HEPATITIS C (Hepatitis C)
+================================================================================
+English symptoms: Similar to Hepatitis B — fatigue, jaundice, joint pain; frequently
+asymptomatic until advanced liver damage.
+Urdu symptoms: جسم کا زرد ہونا (jism ka zard hona), جوڑوں کا درد (joroon ka dard), کمزوری
+(kamzori)
+Severity: Mild (silent) to Severe (cirrhosis/liver cancer risk)
+Emergency warning signs: Vomiting blood, black tarry stools, severe abdominal distension,
+confusion (hepatic encephalopathy).
+Affected demographics: Adults; Pakistan has one of the highest HCV burdens in the world, linked
+to reuse of syringes and unsafe medical practices.
+Source: [NIH2] — hepatitis C prevalence in the general population estimated at 7.5%, with
+around 19,000 deaths/year and roughly 545,000 new infections annually.
+
+================================================================================
+9. DENGUE FEVER (Dengue Bukhar)
+================================================================================
+English symptoms: High fever, severe headache, pain behind the eyes, joint/muscle pain, rash,
+mild bleeding (nose/gums).
+Urdu symptoms: تیز بخار (tez bukhar), آنکھوں کے پیچھے درد (aankhon ke peechay dard), جوڑوں کا
+درد (joroon ka dard), جسم پر دانے (jism par daanay)
+Severity: Moderate to Emergency (severe dengue/dengue hemorrhagic fever)
+Emergency warning signs: Severe abdominal pain, persistent vomiting, bleeding gums/nose, blood
+in vomit or stool, difficulty breathing, extreme fatigue/restlessness — signs of severe dengue
+requiring immediate hospitalization.
+Affected demographics: All ages, seasonal spikes (monsoon, especially in Punjab and Sindh urban
+centers).
+Source: [WHO2]; national dengue surveillance reports referenced by Pakistan's Ministry of
+National Health Services.
+
+================================================================================
+10. MALARIA (Malaria)
+================================================================================
+English symptoms: Cyclical high fever with chills and rigors, sweating, headache, muscle aches,
+nausea.
+Urdu symptoms: بخار کے ساتھ کپکپی (bukhar ke sath kapkapi), سر درد (sar dard), جسم درد (jism
+dard)
+Severity: Moderate to Emergency (cerebral/severe malaria)
+Emergency warning signs: Seizures, confusion, unconsciousness, extreme pallor/anemia,
+difficulty breathing — signs of severe/cerebral malaria.
+Affected demographics: Rural and flood-affected populations, especially in Sindh and Balochistan.
+Source: [GBD1] general infectious-disease burden context; WHO World Malaria Report country data.
+
+================================================================================
+11. TYPHOID FEVER (Mote Jhamke / Typhoid)
+================================================================================
+English symptoms: Sustained high fever, weakness, stomach pain, headache, loss of appetite,
+constipation or diarrhea, rose-colored rash.
+Urdu symptoms: مسلسل بخار (musalsal bukhar), پیٹ میں درد (pait mein dard), کمزوری (kamzori),
+بھوک کی کمی (bhook ki kami)
+Severity: Moderate to Severe
+Emergency warning signs: Severe abdominal pain with rigidity (possible intestinal perforation),
+confusion, blood in stool.
+Affected demographics: Children and young adults, linked to contaminated food/water; extensively
+drug-resistant (XDR) typhoid strains reported in Sindh.
+Source: [GBD1]; WHO typhoid fever fact sheet.
+
+================================================================================
+12. COVID-19 (Corona Virus)
+================================================================================
+English symptoms: Fever, dry cough, fatigue, loss of taste/smell, sore throat, shortness of
+breath.
+Urdu symptoms: بخار (bukhar), خشک کھانسی (khushk khansi), ذائقہ اور سونگھنے کی حس ختم ہونا
+(zaiqa aur songhne ki hiss khatam hona), سانس لینے میں دشواری (saans lenay mein dushwari)
+Severity: Mild to Emergency
+Emergency warning signs: Persistent chest pain/pressure, bluish lips/face, confusion, oxygen
+saturation below 92%, inability to stay awake.
+Affected demographics: All ages; elderly and those with comorbidities (diabetes, heart/lung
+disease) at highest risk of severe disease.
+Source: [WHO2]; WHO COVID-19 clinical management guidance.
+
+================================================================================
+13. TYPE 2 DIABETES MELLITUS (Sugar / Ziyabetus)
+================================================================================
+English symptoms: Excessive thirst, frequent urination, unexplained weight loss, fatigue,
+blurred vision, slow-healing wounds.
+Urdu symptoms: زیادہ پیاس لگنا (zyada pyaas lagna), بار بار پیشاب آنا (baar baar peshab aana),
+دھندلا نظر آنا (dhundla nazar aana), زخم کا دیر سے بھرنا (zakhm ka dair se bharna)
+Severity: Mild (controlled) to Emergency (diabetic ketoacidosis, hypoglycemia)
+Emergency warning signs: Confusion, fruity-smelling breath, rapid breathing, unconsciousness
+(DKA); or sweating, shaking, confusion from severe low blood sugar (hypoglycemia).
+Affected demographics: Adults, rising prevalence in urban populations; Pakistan has one of the
+highest diabetes prevalence rates in the world per International Diabetes Federation data.
+Source: [GBD1]/[NCD] — NCDs including diabetes are rising sharply and forecast to be among the
+top three causes of death in Pakistan in coming decades.
+
+================================================================================
+14. HYPERTENSION (High Blood Pressure / Balaa Fasha Khoon)
+================================================================================
+English symptoms: Often asymptomatic; may include headache, dizziness, nosebleeds when severe.
+Urdu symptoms: عام طور پر کوئی علامت نہیں، شدید صورت میں سر درد (sar dard), چکر آنا (chakkar
+aana), ناک سے خون (naak se khoon)
+Severity: Mild (silent) to Emergency (hypertensive crisis)
+Emergency warning signs: Blood pressure reading with severe headache, chest pain, vision
+changes, confusion, or shortness of breath — hypertensive emergency.
+Affected demographics: Adults, more common with age, obesity, high-salt diets; a leading NCD
+risk factor nationally.
+Source: [GBD1] — high systolic blood pressure listed among the top all-age risk factors for
+death and disability in Pakistan.
+
+================================================================================
+15. CHRONIC OBSTRUCTIVE PULMONARY DISEASE (COPD) (Saans ki Purani Bimari)
+================================================================================
+English symptoms: Chronic cough, sputum production, breathlessness on exertion, wheezing.
+Urdu symptoms: پرانی کھانسی (purani khansi), سانس پھولنا (saans phoolna), سینے میں گھرگھراہٹ
+(seenay mein ghurghurahat)
+Severity: Moderate to Emergency
+Emergency warning signs: Severe breathlessness at rest, bluish lips/fingertips, confusion,
+inability to speak full sentences.
+Affected demographics: Smokers, biomass-fuel-exposed rural women, adults 40+.
+Source: [GBD1] air pollution and tobacco listed among leading national risk factors.
+
+================================================================================
+16. CHRONIC KIDNEY DISEASE (CKD) (Guron ki Bimari)
+================================================================================
+English symptoms: Fatigue, swelling in legs/feet, reduced urine output, itching, nausea, poor
+appetite.
+Urdu symptoms: تھکاوٹ (thakawat), ٹانگوں میں سوجن (tangoon mein sujan), پیشاب کم آنا (peshab
+kam aana), خارش (kharish)
+Severity: Moderate to Emergency (end-stage renal failure)
+Emergency warning signs: Little or no urination, severe shortness of breath, chest pain,
+confusion, seizures — signs of uremia/fluid overload requiring dialysis.
+Affected demographics: Diabetics, hypertensive patients, adults 40+.
+Source: [GBD1]/NCD burden literature — CKD strongly linked to rising diabetes/hypertension
+prevalence.
+
+================================================================================
+17. ASTHMA (Damma)
+================================================================================
+English symptoms: Wheezing, shortness of breath, chest tightness, cough (often worse at night).
+Urdu symptoms: گھرگھراہٹ (ghurghurahat), سانس پھولنا (saans phoolna), سینے میں جکڑن (seenay
+mein jakran)
+Severity: Mild to Emergency (status asthmaticus)
+Emergency warning signs: Severe difficulty speaking/breathing, bluish lips, drowsiness, no
+improvement with usual inhaler.
+Affected demographics: Children and adults; aggravated by urban air pollution and smoke exposure.
+Source: [GBD1] air pollution risk-factor data.
+
+================================================================================
+18. MEASLES (Khasra)
+================================================================================
+English symptoms: High fever, cough, runny nose, red watery eyes, red blotchy rash starting on
+face.
+Urdu symptoms: تیز بخار (tez bukhar), کھانسی (khansi), آنکھوں کی سرخی (aankhon ki surkhi),
+جسم پر دانے (jism par daanay)
+Severity: Moderate to Emergency (complications: pneumonia, encephalitis)
+Emergency warning signs: Difficulty breathing, persistent high fever, convulsions, extreme
+lethargy.
+Affected demographics: Unvaccinated children; periodic outbreaks linked to vaccination gaps.
+Source: [WHO2]; national EPI (Expanded Programme on Immunization) surveillance data.
+
+================================================================================
+19. CHOLERA (Hazza)
+================================================================================
+English symptoms: Sudden onset of profuse watery ("rice-water") diarrhea, vomiting, rapid
+dehydration, leg cramps.
+Urdu symptoms: اچانک شدید پتلے دست (achanak shadeed patlay dast), قے (qai), ٹانگوں میں مروڑ
+(tangoon mein maror)
+Severity: Severe to Emergency
+Emergency warning signs: Signs of severe dehydration — sunken eyes, no tears, extreme
+lethargy, weak/absent pulse — can be fatal within hours without rehydration.
+Affected demographics: Populations with poor water/sanitation access, flood-affected areas.
+Source: [GBD1] diarrheal disease burden; WHO cholera fact sheet.
+
+================================================================================
+20. MALNUTRITION / STUNTING (Protein-Energy Malnutrition) (Kamzori-e-Ghiza)
+================================================================================
+English symptoms (children): Poor weight gain, visible wasting, swelling of feet (edema), thin
+hair, low energy.
+Urdu symptoms: وزن کا نہ بڑھنا (wazan ka na barhna), جسم کا لاغر ہونا (jism ka laghar hona),
+پاؤں میں سوجن (paon mein sujan)
+Severity: Moderate to Emergency (severe acute malnutrition)
+Emergency warning signs: Severe wasting, bilateral pitting edema, apathy/lethargy, poor
+appetite/refusal to eat — requires urgent therapeutic feeding.
+Affected demographics: Children under 5, especially in Sindh and Balochistan; pregnant/lactating
+women.
+Source: [GBD1] — child and maternal malnutrition cited as the leading national risk factor for
+death and disability-adjusted life-years.
+
+================================================================================
+21. BREAST CANCER (Cancer)
+================================================================================
+English symptoms: Breast lump, change in breast shape/size, skin dimpling, nipple discharge or
+inversion, persistent breast pain.
+Urdu symptoms: چھاتی میں گلٹی (chaati mein gulti), چھاتی کی شکل میں تبدیلی (chaati ki shakal
+mein tabdeeli), نپل سے رطوبت (nipple se rutoobat)
+Severity: Moderate to Severe (depends on stage at diagnosis)
+Emergency warning signs: Rapidly enlarging mass, ulceration/bleeding from breast, severe bone
+pain (possible metastasis) — urgent oncology referral.
+Affected demographics: Women, typically 40+, though Pakistan has among the highest breast
+cancer incidence rates in Asia with cases also seen in younger women.
+Source: [GBD1]/[NCD] cancers listed among rising NCD causes of death nationally.
+
+================================================================================
+22. ROAD TRAFFIC INJURIES (Traffic Hadsat)
+================================================================================
+English symptoms: Trauma-related pain, visible wounds/fractures, bleeding, loss of
+consciousness, difficulty moving limbs.
+Urdu symptoms: شدید چوٹ (shadeed choat), خون بہنا (khoon behna), بے ہوشی (be-hoshi), ہڈی ٹوٹنا
+(haddi tootna)
+Severity: Moderate to Emergency
+Emergency warning signs: Uncontrolled bleeding, loss of consciousness, difficulty breathing,
+suspected spinal injury (do not move patient), severe deformity of limbs.
+Affected demographics: Young adult males disproportionately affected (motorcyclists,
+pedestrians); a top cause of injury-related mortality nationally.
+Source: [GBD1] triple-burden-of-disease analysis includes injuries as one of Pakistan's three
+major disease burden categories.
+
+================================================================================
+23. DEPRESSION & ANXIETY DISORDERS (Zehni Dabao / Depression)
+================================================================================
+English symptoms: Persistent sadness, loss of interest, fatigue, sleep disturbance, appetite
+changes, feelings of worthlessness, difficulty concentrating.
+Urdu symptoms: اداسی (udaasi), دل نہ لگنا (dil na lagna), نیند نہ آنا (neend na aana), بے چینی
+(bechaini)
+Severity: Mild to Emergency (with suicidal ideation)
+Emergency warning signs: Expressed thoughts of self-harm or suicide, hopelessness with a plan
+or intent — requires immediate mental-health crisis support/referral.
+Affected demographics: All ages, notably high burden among women (postpartum depression) and
+in populations facing socioeconomic stress or displacement.
+Source: [GBD1] burden-of-disease analysis; WHO mental health atlas Pakistan country profile.
+
+================================================================================
+24. IRON-DEFICIENCY ANEMIA (Khoon ki Kami)
+================================================================================
+English symptoms: Fatigue, pale skin, dizziness, shortness of breath on exertion, brittle nails,
+cold hands/feet.
+Urdu symptoms: تھکاوٹ (thakawat), جسم کا پیلا پڑنا (jism ka peela parna), چکر آنا (chakkar
+aana), سانس پھولنا (saans phoolna)
+Severity: Mild to Severe
+Emergency warning signs: Severe pallor with breathlessness at rest, rapid heartbeat, fainting —
+may require urgent transfusion, especially in pregnancy.
+Affected demographics: Women of reproductive age and pregnant women disproportionately
+affected; also common in children.
+Source: [GBD1] — dietary risk factors and maternal malnutrition listed among leading national
+risk factors for disease burden.
+
+================================================================================
+25. POLIOMYELITIS (Polio)
+================================================================================
+English symptoms: Fever, fatigue, headache, vomiting, stiffness in neck/back, followed in some
+cases by acute flaccid paralysis of limbs.
+Urdu symptoms: بخار (bukhar), سر درد (sar dard), گردن کی اکڑن (gardan ki akarn), اچانک ہاتھ
+پاؤں کا فالج (achanak hath paon ka falij)
+Severity: Moderate to Emergency (paralytic polio)
+Emergency warning signs: Sudden onset of limb weakness/paralysis, difficulty breathing or
+swallowing (bulbar involvement) — requires immediate hospital referral and case reporting to
+health authorities.
+Affected demographics: Unvaccinated children under 5; Pakistan remains one of the last two
+countries where wild poliovirus transmission is endemic.
+Source: [WHO2]; WHO Global Polio Eradication Initiative Pakistan country data.
+
+================================================================================
+END OF FILE — disease_symptoms_pakistan.txt
+================================================================================

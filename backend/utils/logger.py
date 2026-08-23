@@ -1,26 +1,29 @@
-# Centralised logging — never use print()
-"""Centralized logging utility for the Shifa backend."""
+"""
+Centralised logging — never use print() in the codebase.
+Import `logger` from this module everywhere.
+"""
 
 import logging
 import sys
 
 
-def setup_logger() -> logging.Logger:
-    """Configure and return the centralized logger for the Shifa application."""
-    shifa_logger = logging.getLogger("shifa")
-    shifa_logger.setLevel(logging.DEBUG)
+def _build_logger(name: str = "shifa") -> logging.Logger:
+    """Create and configure the application-wide logger."""
+    _logger = logging.getLogger(name)
+    _logger.setLevel(logging.DEBUG)
 
-    if not shifa_logger.handlers:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(
-            fmt="[%(asctime)s] %(levelname)s | %(name)s | %(message)s",
-            datefmt="%H:%M:%S",
+    # Prevent duplicate handlers if module is re-imported
+    if not _logger.handlers:
+        console = logging.StreamHandler(sys.stdout)
+        console.setLevel(logging.DEBUG)
+        fmt = logging.Formatter(
+            "[%(asctime)s] %(levelname)-8s %(name)s — %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
-        handler.setFormatter(formatter)
-        shifa_logger.addHandler(handler)
+        console.setFormatter(fmt)
+        _logger.addHandler(console)
 
-    return shifa_logger
+    return _logger
 
 
-logger = setup_logger()
+logger = _build_logger()

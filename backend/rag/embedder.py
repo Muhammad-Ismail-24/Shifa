@@ -3,7 +3,7 @@
 import google.generativeai as genai
 from config.settings import settings
 
-genai.configure(api_key=settings.gemini_api_key)
+genai.configure(api_key=settings.GEMINI_API_KEY)
 
 
 def embed(text: str) -> list[float]:

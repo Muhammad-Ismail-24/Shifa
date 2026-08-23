@@ -7,8 +7,8 @@ from config.settings import settings
 COLLECTION_NAME = "shifa_knowledge"
 
 client = QdrantClient(
-    url=settings.qdrant_url,
-    api_key=settings.qdrant_api_key,
+    url=settings.QDRANT_URL,
+    api_key=settings.QDRANT_API_KEY,
 )
 
 

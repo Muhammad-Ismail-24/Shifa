@@ -65,8 +65,8 @@ def read_pdf(path: Path) -> str:
 def ingest_all() -> None:
     """Read all knowledge documents, chunk, embed, and upload to Qdrant Cloud."""
     client = QdrantClient(
-        url=settings.qdrant_url,
-        api_key=settings.qdrant_api_key,
+        url=settings.QDRANT_URL,
+        api_key=settings.QDRANT_API_KEY,
     )
 
     # Recreate collection (idempotent — safe to re-run)
