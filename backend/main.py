@@ -59,7 +59,7 @@ async def health():
     return {"status": "ok"}
 
 
-@app.post("/analyze")
+@app.post("/analyze", response_model=AnalyzeResponse)
 async def analyze(body: AnalyzeRequest):
     """
     Main analysis endpoint.

@@ -69,10 +69,17 @@ def normalize_urdu(text: str) -> str:
 # Helper — emergency keyword check
 # ---------------------------------------------------------------------------
 
+# The keyword list in config/prompts.py is written in natural Urdu spelling,
+# but run_pipeline() normalizes the patient's text before matching. Both sides
+# must go through the same transform or keywords containing ھ / ي / ك can never
+# match. Normalized once at import — the list is static.
+_NORMALIZED_EMERGENCY_KEYWORDS = [normalize_urdu(k).lower() for k in EMERGENCY_KEYWORDS]
+
+
 def _is_emergency(text: str) -> bool:
     """Return True if the patient's input contains any emergency keyword."""
-    text_lower = text.lower()
-    for keyword in EMERGENCY_KEYWORDS:
+    text_lower = normalize_urdu(text).lower()
+    for keyword in _NORMALIZED_EMERGENCY_KEYWORDS:
         if keyword in text_lower:
             return True
     return False

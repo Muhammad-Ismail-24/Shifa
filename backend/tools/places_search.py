@@ -10,7 +10,7 @@ from utils.logger import logger
 _PLACES_NEARBY_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
 
-async def places_search(latitude: float, longitude: float) -> dict:
+async def places_search(latitude: float, longitude: float) -> list[dict]:
     """
     Search for nearby hospitals using the Google Places Nearby Search API.
 
@@ -19,8 +19,8 @@ async def places_search(latitude: float, longitude: float) -> dict:
         longitude: GPS longitude of the user's location.
 
     Returns:
-        The JSON response from the Google Places API, or an error dict
-        if the request fails.
+        Up to 3 hospitals as {"name", "lat", "lng", "address", "distance_km"},
+        or an empty list if the request fails.
     """
     params = {
         "location": f"{latitude},{longitude}",

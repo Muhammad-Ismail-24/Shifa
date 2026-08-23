@@ -1,17 +1,18 @@
 // TypeScript interfaces for all API shapes.
 //
 // This file is the frontend half of the Zaheen <-> Sufiyan contract. It mirrors
-// the documented POST /analyze Pydantic models. The backend is still an empty
-// scaffold, so these shapes come from the team specification rather than from
-// running code — re-verify against backend/main.py the moment it lands, and
-// treat any mismatch as a contract bug rather than patching around it here.
+// the POST /analyze response as the backend actually builds it — verified
+// against backend/main.py (AnalyzeResponse), backend/agents/orchestrator.py and
+// the JSON contracts in backend/config/prompts.py. Treat any future mismatch as
+// a contract bug rather than patching around it here.
 
 export interface Disease {
-  name: string;
-  name_urdu: string;
+  /** English disease name. Emitted as "disease" by DISEASE_IDENTIFICATION_PROMPT. */
+  disease: string;
   /** "high" | "medium" | "low" — kept as string to match the backend exactly. */
   confidence: string;
-  explanation_urdu: string;
+  /** Urdu disease name. Emitted as "urdu" by DISEASE_IDENTIFICATION_PROMPT. */
+  urdu: string;
 }
 
 export interface Medicine {
@@ -23,10 +24,14 @@ export interface Medicine {
 
 export interface Hospital {
   name: string;
-  distance_km: number;
   lat: number;
   lng: number;
   address: string;
+  /**
+   * Null until distance calculation is implemented — tools/places_search.py
+   * currently sets this to None on every result.
+   */
+  distance_km: number | null;
 }
 
 export interface ConversationMessage {

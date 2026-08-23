@@ -18,8 +18,9 @@ def medicine_lookup(disease_name: str) -> dict:
         disease_name: The disease/condition to search for (case-insensitive).
 
     Returns:
-        A dict with the disease key and its medicine data, or an empty dict
-        if the disease is not found in the local database.
+        The disease's medicine record — {"urdu_name", "medicines",
+        "avoid_urdu", "see_doctor", "disclaimer_urdu"} — or a record with an
+        empty "medicines" list if the disease is not in the local database.
     """
     try:
         data: dict = json.loads(_MEDICINES_PATH.read_text(encoding="utf-8"))
@@ -32,7 +33,9 @@ def medicine_lookup(disease_name: str) -> dict:
     for disease, info in data.items():
         if disease.lower() == key:
             logger.info("Medicine match found for '%s'", disease_name)
-            return {disease: info}
+            # Return the record itself, not {disease: record}. Callers read
+            # "medicines" and "disclaimer_urdu" straight off the result.
+            return info
 
     logger.warning("No medicine data found for '%s'", disease_name)
     return {"medicines": [], "disclaimer_urdu": "براہ کرم ڈاکٹر سے ملیں۔ خود علاجی نہ کریں۔"}
