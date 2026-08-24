@@ -1,0 +1,126 @@
+URDU_SYMPTOM_GLOSSARY.TXT
+Knowledge Base: Colloquial Urdu Symptom Phrases → English Medical Terms
+Compiled for RAG ingestion (Pakistani colloquial/clinical Urdu usage).
+Note: These are common everyday phrases patients use in clinics across Pakistan. They are
+compiled from standard Urdu-English medical translation practice and general clinical
+communication conventions (e.g., as used in IMCI/WHO-adapted local-language health materials
+and Pakistani hospital patient-history intake forms), not from a single named source. Always
+confirm intended meaning with the patient, since colloquial phrases can be ambiguous
+(e.g., "chakkar" can mean dizziness OR fainting spells depending on context).
+Format: Urdu phrase (transliteration) — English medical term
+
+================================================================================
+GENERAL / CONSTITUTIONAL
+================================================================================
+1. چکر آ رہے ہیں (chakkar aa rahe hain) — Dizziness / vertigo
+2. طبیعت خراب ہے (tabiyat kharab hai) — Feeling unwell / malaise
+3. جسم ٹوٹ رہا ہے (jism toot raha hai) — Body aches
+4. کمزوری ہے (kamzori hai) — Weakness / fatigue
+5. سستی لگ رہی ہے (susti lag rahi hai) — Lethargy
+6. بخار چڑھا ہوا ہے (bukhar charha hua hai) — Fever is elevated
+7. کپکپی طاری ہے (kapkapi taari hai) — Shivering / chills
+8. پسینے آ رہے ہیں (paseenay aa rahay hain) — Sweating / diaphoresis
+9. وزن کم ہو رہا ہے (wazan kam ho raha hai) — Unintentional weight loss
+10. بھوک نہیں لگتی (bhook nahi lagti) — Loss of appetite (anorexia)
+11. نیند نہیں آتی (neend nahi aati) — Insomnia
+12. رات کو پسینہ آتا ہے (raat ko paseena aata hai) — Night sweats
+
+================================================================================
+HEAD / NEUROLOGICAL
+================================================================================
+13. سر میں درد ہے (sar mein dard hai) — Headache
+14. آدھے سر کا درد (aadhay sar ka dard) — Migraine (one-sided headache)
+15. آنکھوں کے سامنے اندھیرا آنا (aankhon ke samnay andhera aana) — Blackout / near-syncope
+16. بے ہوش ہو گیا (be-hosh ho gaya) — Lost consciousness / fainted
+17. دورہ پڑا (dora pra) — Seizure / convulsion
+18. ہاتھ پاؤں سن ہو گئے (hath paon sunn ho gaye) — Numbness in limbs
+19. یاداشت کمزور ہو رہی ہے (yaadasht kamzor ho rahi hai) — Memory loss
+20. زبان لڑکھڑا رہی ہے (zubaan larkhara rahi hai) — Slurred speech
+
+================================================================================
+CHEST / CARDIORESPIRATORY
+================================================================================
+21. سینے میں درد ہے (seenay mein dard hai) — Chest pain
+22. سانس پھول رہی ہے (saans phool rahi hai) — Shortness of breath / dyspnea
+23. سانس لینے میں دقت ہے (saans lenay mein diqqat hai) — Difficulty breathing
+24. دل دھڑک رہا ہے (dil dharak raha hai) — Palpitations
+25. کھانسی ہو رہی ہے (khansi ho rahi hai) — Cough
+26. خشک کھانسی (khushk khansi) — Dry cough
+27. بلغم آ رہا ہے (balgham aa raha hai) — Sputum production
+28. بلغم میں خون (balgham mein khoon) — Hemoptysis (blood in sputum)
+29. سینے میں گھرگھراہٹ (seenay mein ghurghurahat) — Wheezing
+30. سینے میں جکڑن (seenay mein jakran) — Chest tightness
+
+================================================================================
+GASTROINTESTINAL
+================================================================================
+31. پیٹ میں درد ہے (pait mein dard hai) — Abdominal pain
+32. پیٹ میں مروڑ اٹھ رہے ہیں (pait mein maror uth rahay hain) — Abdominal cramps
+33. قے آ رہی ہے (qai aa rahi hai) — Vomiting
+34. متلی ہو رہی ہے (matli ho rahi hai) — Nausea
+35. دست لگے ہیں (dast lagay hain) — Diarrhea
+36. قبض ہے (qabz hai) — Constipation
+37. پیٹ پھولا ہوا ہے (pait phoola hua hai) — Bloating / abdominal distension
+38. جلن ہو رہی ہے (jalan ho rahi hai) — Heartburn / acid reflux
+39. پاخانے میں خون (pakhanay mein khoon) — Blood in stool
+40. یرقان ہو گیا ہے (yarqaan ho gaya hai) — Jaundice
+
+================================================================================
+MUSCULOSKELETAL / PAIN
+================================================================================
+41. کمر میں درد ہے (kamar mein dard hai) — Back pain
+42. جوڑوں میں درد ہے (joroon mein dard hai) — Joint pain (arthralgia)
+43. گھٹنوں میں درد (ghutnon mein dard) — Knee pain
+44. ہڈی ٹوٹ گئی ہے (haddi toot gayi hai) — Fracture (broken bone)
+45. مسلز میں کھچاؤ (muscles mein khichao) — Muscle cramp/spasm
+46. سوجن ہے (sujan hai) — Swelling / edema
+47. گردن اکڑی ہوئی ہے (gardan akri hui hai) — Neck stiffness
+
+================================================================================
+SKIN / EXTERNAL
+================================================================================
+48. جسم پر دانے نکل آئے ہیں (jism par daanay nikal aaye hain) — Skin rash
+49. خارش ہو رہی ہے (kharish ho rahi hai) — Itching (pruritus)
+50. جسم پیلا پڑ گیا ہے (jism peela par gaya hai) — Pallor / yellowing of skin
+51. زخم بھر نہیں رہا (zakhm bhar nahi raha) — Non-healing wound
+52. خون بہہ رہا ہے (khoon beh raha hai) — Bleeding
+
+================================================================================
+URINARY / REPRODUCTIVE
+================================================================================
+53. پیشاب میں جلن (peshab mein jalan) — Burning urination (dysuria)
+54. بار بار پیشاب آنا (baar baar peshab aana) — Frequent urination
+55. پیشاب کم آنا (peshab kam aana) — Reduced urine output (oliguria)
+56. پیشاب میں خون (peshab mein khoon) — Blood in urine (hematuria)
+57. ماہواری میں بے قاعدگی (mahwari mein be-qaidagi) — Irregular menstruation
+58. حمل کے دوران درد (hamal ke doran dard) — Pain during pregnancy
+
+================================================================================
+EYE / EAR / THROAT
+================================================================================
+59. آنکھوں میں جلن (aankhon mein jalan) — Eye irritation/burning
+60. دھندلا نظر آنا (dhundla nazar aana) — Blurred vision
+61. کان میں درد (kaan mein dard) — Ear pain
+62. گلے میں خراش (galay mein kharash) — Sore throat
+63. نگلنے میں دقت (nigalnay mein diqqat) — Difficulty swallowing (dysphagia)
+
+================================================================================
+CHILD-SPECIFIC (used by caregivers)
+================================================================================
+64. بچہ دودھ نہیں پی رہا (bacha doodh nahi pee raha) — Infant not feeding/breastfeeding
+65. بچہ سست پڑ گیا ہے (bacha susst par gaya hai) — Child is lethargic/unresponsive
+66. بچے کو دورے پڑ رہے ہیں (bachay ko doray par rahay hain) — Child having seizures
+67. بچے کا جسم گرم ہے (bachay ka jism garam hai) — Child feels hot (fever)
+
+================================================================================
+MENTAL HEALTH
+================================================================================
+68. دل گھبراتا ہے (dil ghabrata hai) — Anxiety / feeling of unease
+69. اداس رہتا ہوں (udaas rehta hoon) — Persistent sadness (low mood)
+70. کسی کام میں دل نہیں لگتا (kisi kaam mein dil nahi lagta) — Loss of interest (anhedonia)
+71. مرنے کا خیال آتا ہے (marnay ka khayal aata hai) — Suicidal ideation [ALWAYS ESCALATE —
+   treat as an emergency; do not manage via chatbot/RAG response alone]
+
+================================================================================
+END OF FILE — urdu_symptom_glossary.txt (71 entries)
+================================================================================

@@ -1,0 +1,189 @@
+PAKISTAN_MEDICINES.TXT
+Knowledge Base: Common OTC Medicines Available in Pakistani Pharmacies
+Compiled for RAG ingestion. Reference standards: DRAP National Essential Medicine List (NEML)
+2025, WHO Model List of Essential Medicines, and publicly available product/package-insert
+information for widely sold Pakistani OTC brands.
+
+GENERAL SAFETY DISCLAIMER (applies to every entry below):
+This information is for general educational reference only and is NOT a substitute for
+consultation with a licensed pharmacist or physician. Dosages listed are standard adult
+guidance for short-term, occasional OTC use as commonly printed on Pakistani product
+packaging; they are NOT appropriate for every individual. Always check the product leaflet,
+consult a pharmacist/doctor before use — especially for children, pregnant or breastfeeding
+women, the elderly, and people with kidney, liver, heart, or bleeding conditions — and never
+exceed the maximum stated daily dose. If symptoms persist beyond 3 days (fever) or worsen at
+any point, seek medical attention. Many "common" Pakistani brand names listed are Schedule
+OTC/GSL (general sales list) products per DRAP classification; some formulations of the same
+generic (e.g., higher-strength metronidazole, certain antibiotics) legally require a
+prescription in Pakistan even though enforcement varies in practice — a RAG system should not
+encourage self-medication with antibiotics without medical supervision.
+Sources: [DRAP] National Essential Medicine List 2025 — https://www.dra.gov.pk; WHO Model List
+of Essential Medicines (used as the template DRAP's own EML is explicitly based on, per Punjab
+Department of Health EML documentation).
+
+================================================================================
+1. PARACETAMOL (ACETAMINOPHEN) — Pain relief / fever reducer
+================================================================================
+Local brand names: Panadol, Panadol Extra, Calpol (pediatric syrup), Tylenol, Paracip
+Treats: Mild-to-moderate pain, headache, fever, body aches, menstrual cramps
+Standard adult dosage: 500–1000 mg every 4–6 hours as needed; maximum 4000 mg (4 g) in 24
+hours (lower max advised for those with liver disease or regular alcohol use)
+Pediatric: Weight-based dosing (typically ~10–15 mg/kg per dose) — use pediatric
+syrup/suspension per package instructions; do not use adult tablets for young children.
+Safety notes: Overdose can cause serious liver damage; avoid combining multiple products that
+each contain paracetamol (common cause of accidental overdose).
+Reference: WHO Model List of Essential Medicines includes paracetamol as a core analgesic/
+antipyretic; DRAP NEML lists paracetamol among essential medicines.
+
+================================================================================
+2. IBUPROFEN — NSAID pain reliever / anti-inflammatory
+================================================================================
+Local brand names: Brufen, Advil, Nurofen
+Treats: Pain, inflammation, fever, muscle/joint pain, menstrual cramps
+Standard adult dosage: 200–400 mg every 6–8 hours with food; maximum 1200 mg/day for OTC use
+(higher doses only under medical supervision)
+Safety notes: Avoid in peptic ulcer disease, kidney impairment, and in the third trimester of
+pregnancy; take with food to reduce stomach irritation; avoid combining with aspirin regularly.
+Reference: WHO Model List of Essential Medicines lists ibuprofen as an essential NSAID.
+
+================================================================================
+3. ASPIRIN — Pain reliever / antiplatelet
+================================================================================
+Local brand names: Disprin, Ecosprin (low-dose cardioprotective form)
+Treats: Mild pain, fever (higher dose); low-dose used long-term for cardiovascular protection
+under medical supervision
+Standard adult dosage: 300–600 mg every 4–6 hours for pain/fever (max ~4g/day); low-dose 75–
+150 mg once daily only when prescribed for cardiovascular prevention
+Safety notes: NOT recommended for children/teenagers with viral illness (risk of Reye's
+syndrome); avoid in active bleeding disorders or peptic ulcers; do not use for fever in
+suspected dengue (increases bleeding risk) — use paracetamol instead.
+Reference: WHO Model List of Essential Medicines includes acetylsalicylic acid (aspirin).
+
+================================================================================
+4. ORAL REHYDRATION SALTS (ORS)
+================================================================================
+Local brand names: WHO-ORS sachets, ORSaline, Rehydran
+Treats: Dehydration from diarrhea/vomiting
+Standard adult/child dosage: One sachet dissolved in the specified volume of clean water
+(typically 200 ml or 1 liter per packaging instructions) — sip frequently; replace ongoing
+fluid losses.
+Safety notes: Use exact water volume specified on the packet; do not add sugar/salt beyond
+formulation; seek medical care immediately if severe dehydration signs are present (see
+emergency_warning_signs.txt).
+Reference: WHO/UNICEF standard ORS formulation is on the WHO Model List of Essential Medicines
+and is DRAP NEML-listed as a first-line diarrhea management product.
+
+================================================================================
+5. LOPERAMIDE — Anti-diarrheal
+================================================================================
+Local brand names: Imodium, Lopamide
+Treats: Acute non-bloody diarrhea (symptomatic relief)
+Standard adult dosage: 4 mg initially, then 2 mg after each loose stool; maximum 16 mg/day
+Safety notes: Do NOT use if fever or blood in stool is present (may worsen bacterial dysentery);
+not recommended for children under 12 without medical advice; use alongside ORS, not instead
+of it.
+Reference: WHO Model List of Essential Medicines lists loperamide for symptomatic diarrhea
+management.
+
+================================================================================
+6. METRONIDAZOLE — Antiprotozoal / antibacterial
+================================================================================
+Local brand names: Flagyl, Metrogyl
+Treats: Amoebic dysentery, giardiasis, certain bacterial (anaerobic) infections
+Standard adult dosage: Typically 400 mg two to three times daily for 5–7 days depending on
+indication — dosage and duration vary by infection type
+Safety notes: This is a prescription-intent antimicrobial in most regulatory frameworks; should
+be taken only on medical/pharmacist advice with correct diagnosis and full course completed to
+avoid resistance. Avoid alcohol during and for 48 hours after treatment (disulfiram-like
+reaction). A responsible RAG system should route the user toward consulting a healthcare
+provider rather than self-prescribing antimicrobials.
+Reference: WHO Model List of Essential Medicines includes metronidazole as an essential
+antiprotozoal/antibacterial agent; DRAP regulates antimicrobial sale under its Drugs Act 1976
+framework.
+
+================================================================================
+7. ANTACIDS / H2-BLOCKERS — Acid reflux / indigestion relief
+================================================================================
+Local brand names: Gaviscon, ENO, Risek (omeprazole, technically a PPI — see note), Zantac
+(ranitidine, withdrawn/restricted in many markets due to NDMA contamination concerns —
+check current DRAP status before recommending)
+Treats: Heartburn, acid reflux, indigestion
+Standard adult dosage: Antacid liquids/tablets as needed after meals per label; omeprazole 20
+mg once daily (short-term OTC use, typically up to 14 days) for reflux symptoms
+Safety notes: Persistent symptoms beyond 2 weeks, or symptoms with weight loss/difficulty
+swallowing/vomiting blood, require medical evaluation, not continued self-treatment.
+Reference: WHO Model List of Essential Medicines includes omeprazole as an essential
+proton-pump inhibitor.
+
+================================================================================
+8. CETIRIZINE / LORATADINE — Antihistamines
+================================================================================
+Local brand names: Zyrtec, Alerid, Claritin
+Treats: Allergic rhinitis, hives, itching
+Standard adult dosage: Cetirizine 10 mg once daily; Loratadine 10 mg once daily
+Safety notes: Cetirizine may cause drowsiness in some individuals (loratadine less so);
+avoid driving/operating machinery until effect is known; use pediatric formulations for
+children.
+Reference: WHO Model List of Essential Medicines includes chlorphenamine and cetirizine among
+recommended antihistamines.
+
+================================================================================
+9. AMOXICILLIN / CO-AMOXICLAV — Antibiotics
+================================================================================
+Local brand names: Augmentin (co-amoxiclav), Amoxil
+Treats: Bacterial infections (respiratory, ear, throat, urinary, skin)
+Standard adult dosage: Amoxicillin 500 mg every 8 hours; Augmentin dosing varies by strength
+(e.g., 625 mg every 8 hours) — course length set by prescriber, typically 5–10 days
+Safety notes: These are prescription antibiotics; must be taken only when prescribed for a
+confirmed or strongly suspected bacterial infection, with the full course completed even if
+symptoms improve early, to reduce antimicrobial resistance — a growing public health concern
+in Pakistan. A RAG system should direct users to a physician rather than provide antibiotic
+self-dosing guidance.
+Reference: WHO Model List of Essential Medicines; DRAP antimicrobial stewardship guidelines
+flag rising resistance as a national priority.
+
+================================================================================
+10. VITAMIN/MINERAL SUPPLEMENTS
+================================================================================
+Local brand names: Surbex-Z, Neurobion, Ferrous sulfate/folic acid combinations (e.g.,
+"Folivit"), Calcium-D3 supplements (e.g., "Caltrate")
+Treats: Vitamin B-complex deficiency, iron-deficiency anemia (ferrous sulfate/folic acid),
+calcium/vitamin D deficiency
+Standard adult dosage: Varies widely by product and indication — follow package instructions;
+iron/folic acid supplementation in pregnancy typically follows national antenatal care
+protocol dosing (as advised by an obstetric care provider).
+Safety notes: Iron supplements can cause constipation/GI upset and are dangerous in overdose,
+especially for children (keep out of reach); do not exceed labeled dose without medical advice.
+Reference: DRAP NEML and WHO antenatal care guidelines recommend iron-folic acid
+supplementation for pregnant women given the high prevalence of maternal anemia in Pakistan.
+
+================================================================================
+11. ORAL ANTISEPTIC / COUGH & COLD PREPARATIONS
+================================================================================
+Local brand names: Betadine (povidone-iodine, topical antiseptic), Strepsils (throat lozenges),
+Corex/Tixylix-type cough syrups (composition varies — check for codeine/opioid content, which
+is prescription-controlled in Pakistan)
+Treats: Minor wound antisepsis, sore throat, cough/cold symptomatic relief
+Standard adult dosage: Topical antiseptic — apply as needed to clean, intact skin around a
+wound; lozenges as directed on package (typically every 2–3 hours, max per label)
+Safety notes: Codeine-containing cough syrups are subject to DRAP controlled-substance
+restrictions due to misuse potential — a RAG system should not provide dosing guidance for
+opioid-containing cough preparations and should direct such queries to a pharmacist/physician.
+Reference: DRAP controlled drugs scheduling framework under the Drugs Act, 1976 and Control of
+Narcotic Substances Act.
+
+================================================================================
+GENERAL DRAP CONTEXT NOTE
+================================================================================
+DRAP (Drug Regulatory Authority of Pakistan), established in 2012 under the DRAP Act, regulates
+registration, quality, safety, and efficacy of all therapeutic goods sold in Pakistan, including
+the Health & OTC product category. Its National Essential Medicine List (most recently updated
+2025) defines which medicines are considered essential for primary healthcare needs, ensuring
+availability, appropriate dosage forms, and assured quality nationwide.
+Reference: [DRAP] "National Essential Medicine Lists," https://www.dra.gov.pk/publications/
+national-essential-medicine-lists/ ; [DRAP] "Model List of National Essential Medicines
+(2025) – Notification Dated 20-10-2025."
+
+================================================================================
+END OF FILE — pakistan_medicines.txt
+================================================================================

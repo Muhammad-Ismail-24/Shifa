@@ -1,0 +1,170 @@
+EMERGENCY_WARNING_SIGNS.TXT
+Knowledge Base: Life-Threatening Emergency Signs — Always Trigger Emergency Override
+For use in a healthcare RAG/triage-support system serving Pakistan.
+
+CRITICAL SYSTEM INSTRUCTION FOR IMPLEMENTERS: If a user's input matches or closely resembles
+ANY sign below, the system must immediately override normal informational responses and
+direct the user to call emergency services or go to the nearest hospital emergency department
+without delay (e.g., Rescue 1122 where available, or the nearest tertiary care hospital). Do
+not attempt to provide home-remedy advice for any sign on this list.
+
+Sources / clinical basis:
+[IMCI/ETAT] WHO/UNICEF Integrated Management of Childhood Illness danger signs; WHO Pocket
+   Book of Hospital Care for Children — Emergency Triage Assessment and Treatment (ETAT):
+   https://www.ncbi.nlm.nih.gov/books/NBK154450/
+[WHO-DS] WHO Danger Signs framework for neonatal/young infant sepsis screening (WHO/UNICEF)
+[AHA] American Heart Association / globally-adapted ACLS "chain of survival" warning signs for
+   cardiac and stroke emergencies (used as reference standard in Pakistani hospital emergency
+   protocols)
+[WHO-MH] WHO mhGAP (Mental Health Gap Action Programme) suicide-risk emergency guidance
+
+================================================================================
+EMERGENCY SIGNS (ADULTS)
+================================================================================
+
+1. Severe/crushing chest pain lasting more than a few minutes, especially radiating to arm,
+   jaw, or back
+   Urdu: سینے میں شدید درد جو بازو یا جبڑے تک جائے (seenay mein shadeed dard jo baazu ya jabray
+   tak jaye)
+   Basis: [AHA] classic acute coronary syndrome warning sign.
+
+2. Sudden facial drooping, arm weakness, or slurred speech (stroke "FAST" signs)
+   Urdu: اچانک چہرے کا ٹیڑھا ہونا، ایک طرف کمزوری، بولنے میں دقت (achanak chehray ka terha
+   hona, aik taraf kamzori, bolnay mein diqqat)
+   Basis: [AHA] stroke recognition protocol — time-critical, "time is brain."
+
+3. Difficulty breathing or gasping for air at rest
+   Urdu: آرام کی حالت میں بھی سانس لینے میں شدید دقت (aaram ki halat mein bhi saans lenay mein
+   shadeed diqqat)
+   Basis: [ETAT] respiratory distress is a primary emergency sign in adult and pediatric triage.
+
+4. Bluish discoloration of lips, face, or fingertips (cyanosis)
+   Urdu: ہونٹوں یا چہرے کا نیلا پڑ جانا (hontoun ya chehray ka neela par jana)
+   Basis: [ETAT] sign of severe hypoxia requiring immediate oxygen/emergency care.
+
+5. Sudden loss of consciousness or unresponsiveness
+   Urdu: اچانک بے ہوش ہو جانا (achanak be-hosh ho jana)
+   Basis: [ETAT]/[AHA] coma or unresponsiveness is a top-tier emergency sign in all triage
+   systems.
+
+6. Active seizure/convulsion
+   Urdu: دورہ پڑنا (dora parna)
+   Basis: [ETAT] convulsions listed among core WHO emergency triage signs.
+
+7. Uncontrolled or heavy bleeding from any site
+   Urdu: جسم سے بہت زیادہ خون بہنا جو رکنے میں نہ آئے (jism se bohat zyada khoon behna jo
+   ruknay mein na aaye)
+   Basis: [ETAT] severe hemorrhage/shock precursor — immediate emergency management required.
+
+8. Signs of shock: cold clammy skin, rapid weak pulse, confusion, very low or unmeasurable
+   blood pressure
+   Urdu: جسم کا ٹھنڈا پڑنا، نبض کا کمزور اور تیز ہونا، بلڈ پریشر کا بہت گر جانا (jism ka
+   thanda parna, nabz ka kamzor aur tez hona, blood pressure ka bohat gir jana)
+   Basis: [ETAT] shock is one of the three core WHO emergency triage categories.
+
+9. Vomiting blood or passing black, tarry stools
+   Urdu: خون کی قے آنا یا کالا پاخانہ آنا (khoon ki qai aana ya kaala pakhana aana)
+   Basis: Sign of significant upper GI bleeding — standard emergency-referral criterion.
+
+10. Severe abdominal pain with rigidity or a hard, board-like abdomen
+    Urdu: پیٹ میں شدید درد اور پیٹ کا سخت ہو جانا (pait mein shadeed dard aur pait ka sakht ho
+    jana)
+    Basis: Classic peritonitis/acute abdomen warning sign requiring surgical emergency evaluation.
+
+11. High fever (>103°F/39.4°C) with stiff neck, confusion, or severe headache
+    Urdu: تیز بخار کے ساتھ گردن کی اکڑن یا شدید سر درد (tez bukhar ke sath gardan ki akarn ya
+    shadeed sar dard)
+    Basis: Possible meningitis/encephalitis — recognized emergency referral criterion.
+
+12. Sudden severe allergic reaction: facial/throat swelling, hives with difficulty breathing
+    Urdu: چہرے یا گلے میں اچانک سوجن اور سانس لینے میں دقت (chehray ya galay mein achanak
+    sujan aur saans lenay mein diqqat)
+    Basis: Anaphylaxis — universally recognized life-threatening emergency.
+
+13. Suicidal statements or expressed intent/plan to self-harm
+    Urdu: خودکشی کا خیال یا ارادہ ظاہر کرنا (khudkushi ka khayal ya irada zahir karna)
+    Basis: [WHO-MH] mhGAP guidance treats expressed suicidal intent as an immediate emergency
+    requiring direct, non-judgmental escalation to crisis support/in-person care.
+
+14. Major trauma: severe injury from road traffic accident, fall from height, or deep wound
+    with heavy bleeding
+    Urdu: شدید حادثاتی زخم یا اونچائی سے گرنا (shadeed hadsati zakhm ya oonchai se girna)
+    Basis: Standard trauma-triage emergency criterion.
+
+15. Severe burns (large body surface area, face, hands, or airway involvement)
+    Urdu: شدید جھلسنا خاص طور پر چہرے یا ہاتھوں پر (shadeed jhulasna khaas tor par chehray ya
+    hathon par)
+    Basis: Recognized emergency-referral criterion in burn-management protocols.
+
+================================================================================
+EMERGENCY SIGNS (CHILDREN / INFANTS) — per WHO IMCI/ETAT general danger signs
+================================================================================
+
+16. Inability to drink or breastfeed at all
+    Urdu: بچے کا بالکل دودھ یا پانی نہ پینا (bachay ka bilkul doodh ya pani na peena)
+    Basis: [IMCI/ETAT] core general danger sign for children under five.
+
+17. Vomiting everything the child is given
+    Urdu: بچے کا ہر چیز الٹی کر دینا (bachay ka har cheez ulti kar dena)
+    Basis: [IMCI/ETAT] core general danger sign.
+
+18. Convulsions during the current illness, or history of convulsions
+    Urdu: بیماری کے دوران بچے کو دورہ پڑنا (bimari ke doran bachay ko dora parna)
+    Basis: [IMCI/ETAT] core general danger sign.
+
+19. Lethargy or unconsciousness — child is difficult to wake or abnormally drowsy
+    Urdu: بچے کا غیر معمولی طور پر سست یا بے ہوش ہونا (bachay ka ghair mamuli tor par susst ya
+    be-hosh hona)
+    Basis: [IMCI/ETAT] core general danger sign — all children with this sign require immediate
+    hospital referral.
+
+20. Chest indrawing or grunting with breathing (severe pneumonia sign)
+    Urdu: سانس لیتے وقت سینہ دھنسنا یا آواز نکالنا (saans letay waqt seena dhansna ya awaz
+    nikalna)
+    Basis: [IMCI/ETAT] severe respiratory distress sign in children.
+
+21. Signs of severe dehydration: sunken eyes, very slow skin pinch return, no tears, no urine
+    for many hours
+    Urdu: آنکھیں دھنسی ہوئی، جلد کا دیر سے واپس آنا، پیشاب نہ آنا (aankhen dhansi hui, jild ka
+    dair se wapis aana, peshab na aana)
+    Basis: [IMCI/ETAT] severe dehydration classification — emergency IV fluid management needed.
+
+22. Bulging or sunken fontanelle in an infant, with fever or lethargy
+    Urdu: بچے کے سر کے نرم حصے کا اُبھرنا یا دھنسنا (bachay ke sar ke naram hisay ka ubharna ya
+    dhansna)
+    Basis: [WHO-DS] WHO young-infant danger-sign framework — possible meningitis/raised
+    intracranial pressure.
+
+23. Young infant (under 2 months) with fast breathing, fever, or feeding difficulty
+    Urdu: دو ماہ سے کم عمر بچے میں تیز سانس، بخار یا دودھ نہ پینا (do maah se kam umar bachay
+    mein tez saans, bukhar ya doodh na peena)
+    Basis: [WHO-DS] possible serious bacterial infection/neonatal sepsis — treated as emergency
+    given high mortality risk in young infants.
+
+24. Severe acute malnutrition with bilateral pitting edema or extreme wasting plus loss of
+    appetite
+    Urdu: شدید غذائی قلت کے ساتھ سوجن یا جسم کا انتہائی لاغر ہونا (shadeed ghizai qillat ke
+    sath sujan ya jism ka intehai laghar hona)
+    Basis: [ETAT] severe acute malnutrition with complications is a WHO-classified emergency
+    requiring inpatient therapeutic care.
+
+================================================================================
+ADDITIONAL PAKISTAN-CONTEXT EMERGENCY SIGNS
+================================================================================
+
+25. Animal bite (especially stray dog) with broken skin, particularly on face/neck/hands
+    Urdu: کتے یا جانور کے کاٹنے سے زخم، خاص طور پر چہرے یا ہاتھ پر (kuttay ya janwar ke katnay
+    se zakhm, khaas tor par chehray ya hath par)
+    Basis: Rabies post-exposure prophylaxis is time-critical; WHO classifies category II/III
+    animal bites as requiring immediate medical attention.
+
+26. Suspected heatstroke: very high body temperature, hot dry skin, confusion, collapse (common
+    in Pakistani summer heatwaves)
+    Urdu: شدید گرمی لگنا، جسم کا بہت گرم اور خشک ہونا، بے ہوشی (shadeed garmi lagna, jism ka
+    bohat garam aur khushk hona, be-hoshi)
+    Basis: Recognized emergency-referral criterion in heatwave public health advisories issued
+    by provincial health departments during extreme heat events.
+
+================================================================================
+END OF FILE — emergency_warning_signs.txt (26 signs)
+================================================================================
