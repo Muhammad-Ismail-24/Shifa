@@ -22,7 +22,9 @@
     Lives in index.html rather than a component so the filter id is defined once
     for the document lifetime; a React-rendered <defs> can transiently unmount
     and leave url(#liquid-glass-refraction) dangling, which blanks the card.
+     
 
+    
     Ported verbatim from the Planetary Pulse reference: turbulence -> boosted
     alpha -> blur -> edge mask -> one displacement pass per colour channel at
     decreasing scale (chromatic dispersion) -> screen blend.
