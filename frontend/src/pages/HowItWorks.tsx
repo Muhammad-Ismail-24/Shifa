@@ -51,14 +51,16 @@ export default function HowItWorks() {
   const stepRefs = useRef<(HTMLElement | null)[]>([]);
 
   /**
-   * Drives the sticky panel. Scoped to the desktop layout: below 1024px the
-   * panel is not sticky and each step renders its own copy, so the observer
-   * does not need to run at all.
+   * Drives the sticky panel.
+   *
+   * Deliberately NOT gated on a desktop media query. Gating it at mount meant
+   * that loading below 1024px and then widening the window - an ordinary
+   * desktop resize - left the observer never created and the sticky panel
+   * frozen on step 1. Observing three elements is cheap, and `active` is only
+   * ever read by the desktop sticky panel (the stacked mobile panels use a
+   * fixed step index), so running it at every width is harmless.
    */
   useEffect(() => {
-    const isDesktop = window.matchMedia('(min-width: 1024px)');
-    if (!isDesktop.matches) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

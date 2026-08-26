@@ -40,9 +40,9 @@ export default function NotFound() {
       <section className="doc__section">
         <div className="doc__wrap">
           <nav aria-label="All pages">
-            <ul className="cmap__list">
+            <ul className="notfound__list">
               {DESTINATIONS.map((destination) => (
-                <li className="cmap__listItem" key={destination.to}>
+                <li className="notfound__item" key={destination.to}>
                   <Link className="doc__arrowLink" to={destination.to}>
                     <span>{destination.label}</span>
                     <ArrowRight size={16} />

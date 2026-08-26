@@ -1673,3 +1673,30 @@ html.doc-scroll { scroll-behavior: smooth; }
 }
 
 .endnote .doc__urduGloss { text-align: center; width: 100%; }
+
+/* ---------------------------------------------------------------------------
+   404
+
+   Its own list rather than borrowing .cmap__list: that class is deliberately
+   collapsed to screen-reader-only at >=768px, because on Contact the
+   constellation diagram takes over as the visual representation. Reusing it
+   here hid the 404's only in-page navigation on every desktop viewport.
+--------------------------------------------------------------------------- */
+
+.notfound__list { list-style: none; display: grid; gap: 0; }
+
+.notfound__item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.notfound__item:first-child { border-top: 1px solid rgba(0, 0, 0, 0.1); }
+
+.notfound__item .doc__arrowLink {
+  font-size: 1.0625rem;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  .notfound__item { padding: 1.5rem 0; }
+  .notfound__item .doc__arrowLink { font-size: 1.25rem; }
+}
