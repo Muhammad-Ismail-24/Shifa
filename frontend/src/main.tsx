@@ -7,6 +7,9 @@ import App from './App';
 // port of the reference CSS and must win over Tailwind's preflight reset.
 import './index.css';
 import './styles/landing.css';
+// Informational pages. Loaded last so .doc-scroll can override the landing's
+// overflow lock, and namespaced under .doc so nothing here reaches the landing.
+import './styles/pages.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
