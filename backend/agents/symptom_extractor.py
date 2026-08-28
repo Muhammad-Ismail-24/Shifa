@@ -1,9 +1,12 @@
 # Turn 2: Urdu text → symptoms list
 
 import json
+import logging
 from config.prompts import SYMPTOM_EXTRACTION_PROMPT
-from utils.model_router import generate_content_with_fallback_async
+from utils.model_router import generate_json_with_fallback_async
 from rag.retriever import retrieve
+
+logger = logging.getLogger(__name__)
 
 
 async def extract_symptoms(urdu_text: str) -> list[str]:
@@ -23,8 +26,7 @@ async def extract_symptoms(urdu_text: str) -> list[str]:
         context_chunks = retrieve(urdu_text, k=5)
         context = "\n".join(context_chunks)
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).warning(f"RAG retrieval failed, falling back to empty context: {e}")
+        logger.warning(f"RAG retrieval failed, falling back to empty context: {e}")
         context = ""
 
     prompt = (
@@ -33,8 +35,6 @@ async def extract_symptoms(urdu_text: str) -> list[str]:
         f"Patient said:\n{urdu_text}"
     )
 
-    raw = await generate_content_with_fallback_async(
-        prompt,
-        generation_config={"response_mime_type": "application/json"}
-    )
+    raw = await generate_json_with_fallback_async(prompt)
     return json.loads(raw)
+

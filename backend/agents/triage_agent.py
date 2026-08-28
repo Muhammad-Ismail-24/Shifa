@@ -2,7 +2,7 @@
 
 import json
 from config.prompts import TRIAGE_EVALUATION_PROMPT
-from utils.model_router import generate_content_with_fallback_async
+from utils.model_router import generate_json_with_fallback_async
 
 
 async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
@@ -29,8 +29,6 @@ async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
         f"Latest message:\n{latest_input}"
     )
 
-    raw = await generate_content_with_fallback_async(
-        prompt,
-        generation_config={"response_mime_type": "application/json"}
-    )
+    raw = await generate_json_with_fallback_async(prompt)
     return json.loads(raw)
+
