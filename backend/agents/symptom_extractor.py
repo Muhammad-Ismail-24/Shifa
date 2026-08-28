@@ -19,8 +19,13 @@ async def extract_symptoms(urdu_text: str) -> list[str]:
         List of English symptom strings, e.g. ["fever", "headache", "vomiting"]
     """
     # Get relevant glossary context from RAG
-    context_chunks = retrieve(urdu_text, k=5)
-    context = "\n".join(context_chunks)
+    try:
+        context_chunks = retrieve(urdu_text, k=5)
+        context = "\n".join(context_chunks)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"RAG retrieval failed, falling back to empty context: {e}")
+        context = ""
 
     prompt = (
         f"{SYMPTOM_EXTRACTION_PROMPT}\n\n"
