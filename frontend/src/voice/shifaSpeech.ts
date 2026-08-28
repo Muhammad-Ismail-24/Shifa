@@ -48,6 +48,29 @@ export class ShifaSpeech {
     this.engine = engine;
   }
 
+  /**
+   * Unlock the browser's speech synthesis engine during a user gesture.
+   *
+   * Chrome and Safari revoke the "user activation" token ~5 seconds after the
+   * click. Our API round-trip takes 15-20s, so by the time the Urdu response
+   * arrives, `speechSynthesis.speak()` is silently blocked by autoplay policy.
+   *
+   * Calling this method **inside the click handler** speaks a zero-length
+   * silent utterance, which creates an active speech session that persists
+   * past the gesture timeout. The real `speak()` call then succeeds later.
+   */
+  warmSynthesis(): void {
+    const synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
+    if (!synth) return;
+
+    // Cancel any prior queue, then speak a silent empty utterance.
+    synth.cancel();
+    const warm = new SpeechSynthesisUtterance('');
+    warm.volume = 0;
+    warm.rate = 10; // finish instantly
+    synth.speak(warm);
+  }
+
   get signalKind(): SpeechSignalKind {
     return this.signal;
   }

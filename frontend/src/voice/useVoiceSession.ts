@@ -16,7 +16,7 @@ import { UrduSpeechRecognizer, isSpeechRecognitionSupported } from './speechReco
 import { VoiceActivityDetector } from './voiceActivity';
 import { subscribeFrame } from './rafHub';
 import { VoiceState, canTransition, waveSourceFor, type VoiceStateValue, type WaveSource } from './voiceState';
-import { isClarificationTurn } from '../lib/types';
+import { type AnalyzeResponse } from '../lib/types';
 
 export interface VoiceSession {
   state: VoiceStateValue;
@@ -30,6 +30,12 @@ export interface VoiceSession {
   level: number;
   mode: 'live' | 'mock';
   isEmergency: boolean;
+  /** True when the backend returned a diagnosis and the UI should navigate. */
+  navigateToResults: boolean;
+  /** The full API response to pass as navigation state. */
+  latestResponse: AnalyzeResponse | null;
+  /** Reset the navigation flag after the caller has navigated. */
+  clearNavigation: () => void;
   start: () => void;
   stop: () => void;
   retry: () => void;
@@ -49,6 +55,9 @@ export function useVoiceSession(): VoiceSession {
   const [errorMessage, setErrorMessage] = useState('');
   const [level, setLevel] = useState(0);
   const [isEmergency, setIsEmergency] = useState(false);
+  const [navigateToResults, setNavigateToResults] = useState(false);
+
+  const latestResponseRef = useRef<AnalyzeResponse | null>(null);
 
   const engineRef = useRef<AudioEngine | null>(null);
   const speechRef = useRef<ShifaSpeech | null>(null);
@@ -118,7 +127,23 @@ export function useVoiceSession(): VoiceSession {
       const response = await clientRef.current!.submitUtterance(text);
       setIsEmergency(response.is_emergency);
 
-      // A triage clarification is a continuing conversation, not empty results.
+      // ── Diagnosis result: navigate to the Results page ──
+      if (response.diseases.length > 0) {
+        // Speak the response while navigating — teardown will cancel if needed.
+        const reply = response.response_text_urdu?.trim();
+        if (reply) {
+          setShifaText(reply);
+          if (transition(VoiceState.SPEAKING)) {
+            speechRef.current!.speak(reply, 'ur-PK');
+          }
+        }
+        // Store the response and signal that navigation should happen.
+        latestResponseRef.current = response;
+        setNavigateToResults(true);
+        return;
+      }
+
+      // ── Triage clarification or empty response ──
       const reply = response.response_text_urdu?.trim();
       if (!reply) {
         setShifaText('');
@@ -127,10 +152,6 @@ export function useVoiceSession(): VoiceSession {
       }
 
       setShifaText(reply);
-      if (isClarificationTurn(response)) {
-        // Intentionally identical handling — the difference is what the
-        // Results view does with it, not how the landing page speaks it.
-      }
 
       if (!transition(VoiceState.SPEAKING)) return;
 
@@ -158,6 +179,11 @@ export function useVoiceSession(): VoiceSession {
     setUserText('');
     setShifaText('');
     clientRef.current!.resetConversation();
+
+    // Warm the browser speech synthesis engine *synchronously* inside the user
+    // gesture. This must happen before any await — Chrome revokes the gesture
+    // token after ~5s, and our API call takes 15-20s.
+    speechRef.current!.warmSynthesis();
 
     if (!transition(VoiceState.REQUESTING_PERMISSION)) return;
 
@@ -295,6 +321,11 @@ export function useVoiceSession(): VoiceSession {
     return { analyser: null, buffer: engine.inputBuffer, source, envelope: 0 };
   }, []);
 
+  const clearNavigation = useCallback(() => {
+    setNavigateToResults(false);
+    latestResponseRef.current = null;
+  }, []);
+
   const mode = clientRef.current!.mode;
 
   return useMemo(
@@ -306,11 +337,14 @@ export function useVoiceSession(): VoiceSession {
       level,
       mode,
       isEmergency,
+      navigateToResults,
+      latestResponse: latestResponseRef.current,
+      clearNavigation,
       start: () => void start(),
       stop,
       retry,
       getWaveInputs,
     }),
-    [state, userText, shifaText, errorMessage, level, mode, isEmergency, start, stop, retry, getWaveInputs],
+    [state, userText, shifaText, errorMessage, level, mode, isEmergency, navigateToResults, clearNavigation, start, stop, retry, getWaveInputs],
   );
 }

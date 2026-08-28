@@ -13,7 +13,7 @@ export const isBackendConfigured = Boolean(baseURL);
 
 const client = axios.create({
   baseURL,
-  timeout: 30000,
+  timeout: 60_000,
   headers: { 'Content-Type': 'application/json' },
 });
 

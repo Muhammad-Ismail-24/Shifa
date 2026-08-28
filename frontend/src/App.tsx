@@ -3,13 +3,14 @@
 import { Routes, Route } from 'react-router-dom';
 
 import Landing from './pages/Landing';
+import Results from './pages/Results';
 import InfoPage from './pages/InfoPage';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-
+      <Route path="/results" element={<Results />} />
       {/* Real routes rather than href="#" placeholders. Each renders an honest
           "not written yet" page instead of pretending to have content. */}
       <Route path="/about" element={<InfoPage title="About Shifa" />} />

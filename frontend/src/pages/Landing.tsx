@@ -9,6 +9,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { ArchitecturalRules } from '../components/landing/ArchitecturalRules';
 import { HeroCopy } from '../components/landing/HeroCopy';
@@ -47,6 +48,7 @@ export default function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const navigate = useNavigate();
 
   const session = useVoiceSession();
   const preview = useStatePreview();
@@ -56,6 +58,14 @@ export default function Landing() {
 
   // Probe once: the result cannot change for the page's lifetime.
   const liquidGlass = useMemo(() => supportsLiquidGlass(), []);
+
+  // Navigate to the Results page when a diagnosis is ready.
+  useEffect(() => {
+    if (session.navigateToResults && session.latestResponse) {
+      navigate('/results', { state: session.latestResponse });
+      session.clearNavigation();
+    }
+  }, [session.navigateToResults, session.latestResponse, navigate, session.clearNavigation]);
 
   /**
    * Ambient environment response. The orb scales by at most 1.8% at full voice
