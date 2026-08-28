@@ -2,7 +2,7 @@
 
 import json
 from config.prompts import DISEASE_IDENTIFICATION_PROMPT
-from utils.llm_router import generate_json_with_fallback
+from utils.model_router import generate_content_with_fallback_async
 from rag.retriever import retrieve
 
 
@@ -28,5 +28,8 @@ async def identify_diseases(symptoms: list[str]) -> list[dict]:
         f"Symptoms: {symptoms}"
     )
 
-    raw = await generate_json_with_fallback(prompt)
+    raw = await generate_content_with_fallback_async(
+        prompt,
+        generation_config={"response_mime_type": "application/json"}
+    )
     return json.loads(raw)

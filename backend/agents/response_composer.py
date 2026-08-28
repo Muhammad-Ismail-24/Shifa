@@ -2,7 +2,7 @@
 
 import json
 from config.prompts import RESPONSE_COMPOSER_PROMPT
-from utils.llm_router import generate_json_with_fallback
+from utils.model_router import generate_content_with_fallback_async
 
 
 async def compose_response(
@@ -37,7 +37,10 @@ async def compose_response(
 
     prompt = f"{RESPONSE_COMPOSER_PROMPT}\n\nData:\n{data_payload}"
 
-    raw = await generate_json_with_fallback(prompt)
+    raw = await generate_content_with_fallback_async(
+        prompt,
+        generation_config={"response_mime_type": "application/json"}
+    )
 
     # Parse the JSON response to extract the Urdu text
     try:

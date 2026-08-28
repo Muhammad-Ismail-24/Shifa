@@ -2,10 +2,11 @@
 
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
-from rag.embedder import embed
+from rag.embedder import embed, embed_batch
 from config.settings import settings
 from pathlib import Path
 import uuid
+import time
 
 COLLECTION_NAME = "shifa_knowledge"
 CHUNK_SIZE = 500       # target maximum character count per chunk
@@ -81,16 +82,19 @@ def ingest_all() -> None:
     for txt_file in knowledge_dir.glob("*.txt"):
         text = txt_file.read_text(encoding="utf-8")
         chunks = chunk_text(text)
+        if not chunks: continue
+        embeddings = embed_batch(chunks)
         points = [
             PointStruct(
                 id=str(uuid.uuid4()),
-                vector=embed(chunk),
+                vector=emb,
                 payload={"text": chunk, "source": txt_file.name},
             )
-            for chunk in chunks
+            for chunk, emb in zip(chunks, embeddings)
         ]
         client.upsert(collection_name=COLLECTION_NAME, points=points)
         print(f"Ingested {txt_file.name} -- {len(chunks)} chunks")
+        time.sleep(2) # To avoid rate limits
 
     # --- Ingest .pdf files from who/ subdirectory ---
     who_dir = knowledge_dir / "who"
@@ -101,16 +105,19 @@ def ingest_all() -> None:
                 print(f"Skipped {pdf_file.name} -- empty after extraction")
                 continue
             chunks = chunk_text(text)
+            if not chunks: continue
+            embeddings = embed_batch(chunks)
             points = [
                 PointStruct(
                     id=str(uuid.uuid4()),
-                    vector=embed(chunk),
+                    vector=emb,
                     payload={"text": chunk, "source": pdf_file.name},
                 )
-                for chunk in chunks
+                for chunk, emb in zip(chunks, embeddings)
             ]
             client.upsert(collection_name=COLLECTION_NAME, points=points)
             print(f"Ingested {pdf_file.name} -- {len(chunks)} chunks")
+            time.sleep(2) # To avoid rate limits
 
     print("\nIngestion complete.")
 

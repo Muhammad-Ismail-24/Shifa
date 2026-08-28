@@ -53,6 +53,26 @@ class AnalyzeResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
+@app.on_event("startup")
+async def startup_event():
+    """Startup safeguard to ensure Qdrant vector database is populated."""
+    logger.info("Running startup checks...")
+    from qdrant_client import QdrantClient
+    from config.settings import settings
+    
+    client = QdrantClient(
+        url=settings.QDRANT_URL,
+        api_key=settings.QDRANT_API_KEY,
+    )
+    
+    if not client.collection_exists("shifa_knowledge"):
+        logger.warning("shifa_knowledge collection missing. Running ingestion...")
+        from rag.ingest import ingest_all
+        ingest_all()
+        logger.info("Ingestion completed successfully.")
+    else:
+        logger.info("shifa_knowledge collection exists.")
+
 @app.get("/health")
 async def health():
     """Simple liveness probe."""

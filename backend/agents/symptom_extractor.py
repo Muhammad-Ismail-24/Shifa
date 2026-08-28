@@ -2,7 +2,7 @@
 
 import json
 from config.prompts import SYMPTOM_EXTRACTION_PROMPT
-from utils.llm_router import generate_json_with_fallback
+from utils.model_router import generate_content_with_fallback_async
 from rag.retriever import retrieve
 
 
@@ -33,5 +33,8 @@ async def extract_symptoms(urdu_text: str) -> list[str]:
         f"Patient said:\n{urdu_text}"
     )
 
-    raw = await generate_json_with_fallback(prompt)
+    raw = await generate_content_with_fallback_async(
+        prompt,
+        generation_config={"response_mime_type": "application/json"}
+    )
     return json.loads(raw)
