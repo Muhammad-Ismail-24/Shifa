@@ -127,8 +127,8 @@ export function useVoiceSession(): VoiceSession {
       const response = await clientRef.current!.submitUtterance(text);
       setIsEmergency(response.is_emergency);
 
-      // ── Diagnosis result: navigate to the Results page ──
-      if (response.diseases.length > 0) {
+      // ── Diagnosis result or Emergency: navigate to the Results page ──
+      if (response.diseases.length > 0 || response.is_emergency) {
         // Speak the response while navigating — teardown will cancel if needed.
         const reply = response.response_text_urdu?.trim();
         if (reply) {
