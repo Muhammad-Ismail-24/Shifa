@@ -91,7 +91,7 @@ export default function Landing() {
           <div className="lede">
             <HeroCopy />
 
-            <VoiceCTA state={state} onStart={session.start} onStop={session.stop} />
+            <VoiceCTA state={state} onStart={session.start} onStop={session.stop} onSubmit={session.submit} />
 
             <p className="lede__privacy">
               Your microphone starts only when you choose to talk.

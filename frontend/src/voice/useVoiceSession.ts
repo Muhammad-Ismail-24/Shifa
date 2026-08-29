@@ -124,6 +124,9 @@ export function useVoiceSession(): VoiceSession {
       submittingRef.current = false;
       return;
     }
+    
+    // Immediately stop speech recognition so it doesn't pick up ambient noise while thinking
+    recognizerRef.current?.abort();
 
     try {
       const response = await clientRef.current!.submitUtterance(text);
@@ -175,6 +178,38 @@ export function useVoiceSession(): VoiceSession {
     }
   }, [transition, fail]);
 
+  const startRecognizer = useCallback(() => {
+    if (isSpeechRecognitionSupported()) {
+      recognizerRef.current!.start({
+        onPartial: (text) => {
+          if (stateRef.current === VoiceState.LISTENING || stateRef.current === VoiceState.USER_SPEAKING) {
+            setUserText(text);
+          }
+        },
+        onFinal: (text) => {
+          if (stateRef.current === VoiceState.LISTENING || stateRef.current === VoiceState.USER_SPEAKING) {
+            finalTextRef.current = `${finalTextRef.current} ${text}`.trim();
+            setUserText(finalTextRef.current);
+          }
+        },
+        onError: (kind) => {
+          if (kind === 'not-allowed') {
+            setErrorMessage('Microphone access is off.');
+            transition(VoiceState.MIC_DENIED);
+          } else if (kind === 'network') {
+            fail("I couldn't reach the speech service. Try again.");
+          }
+        },
+        onEnd: () => {
+          // Restart if we are still supposed to be listening
+          if (stateRef.current === VoiceState.LISTENING || stateRef.current === VoiceState.USER_SPEAKING) {
+            setTimeout(startRecognizer, 100);
+          }
+        }
+      });
+    }
+  }, [transition, fail]);
+
   const start = useCallback(async () => {
     setErrorMessage('');
     setIsEmergency(false);
@@ -203,26 +238,8 @@ export function useVoiceSession(): VoiceSession {
 
     vadRef.current!.reset();
     if (!transition(VoiceState.LISTENING)) return;
-
-    if (isSpeechRecognitionSupported()) {
-      recognizerRef.current!.start({
-        onPartial: (text) => setUserText(text),
-        onFinal: (text) => {
-          finalTextRef.current = `${finalTextRef.current} ${text}`.trim();
-          setUserText(finalTextRef.current);
-        },
-        onError: (kind) => {
-          if (kind === 'not-allowed') {
-            setErrorMessage('Microphone access is off.');
-            transition(VoiceState.MIC_DENIED);
-          } else if (kind === 'network') {
-            fail("I couldn't reach the speech service. Try again.");
-          }
-          // 'no-speech' is normal silence; the VAD owns that path.
-        },
-      });
-    }
-  }, [transition, fail]);
+    startRecognizer();
+  }, [transition, fail, startRecognizer]);
 
   const stop = useCallback(() => {
     teardown();
@@ -283,7 +300,10 @@ export function useVoiceSession(): VoiceSession {
           transition(VoiceState.USER_SPEAKING);
         }
       } else if (event === 'speech-end' || event === 'utterance-timeout') {
-        if (current === VoiceState.USER_SPEAKING) void submit();
+        // Disable VAD auto-submit. User MUST tap "Tap to Send" manually.
+        if (current === VoiceState.USER_SPEAKING) {
+          transition(VoiceState.LISTENING);
+        }
       }
     });
   }, [transition, submit]);
