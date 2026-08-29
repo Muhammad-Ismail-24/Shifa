@@ -19,7 +19,7 @@ async def places_search(latitude: float, longitude: float) -> list[dict]:
         longitude: GPS longitude of the user's location.
 
     Returns:
-        Up to 3 hospitals as {"name", "lat", "lng", "address", "distance_km"},
+        Up to 15 hospitals as {"name", "lat", "lng", "address", "distance_km"},
         or an empty list if the request fails.
     """
     params = {
@@ -44,7 +44,7 @@ async def places_search(latitude: float, longitude: float) -> list[dict]:
             )
             
             parsed_results = []
-            for place in results[:3]:
+            for place in results[:15]:
                 parsed_results.append({
                     "name": place.get("title", ""),
                     "lat": place.get("gps_coordinates", {}).get("latitude", 0.0),

@@ -57,26 +57,51 @@ function MedicineCard({ medicine }: { medicine: Medicine }) {
 
 function HospitalList({ hospitals }: { hospitals: Hospital[] }) {
   if (!hospitals.length) return null;
+  
+  // Use the first hospital's coordinates for the general map at the bottom
+  const centerLat = hospitals[0].lat;
+  const centerLng = hospitals[0].lng;
+
   return (
-    <div className="space-y-3">
-      <h2 className="text-xl font-bold text-white">Nearby Hospitals</h2>
-      {hospitals.map((h, i) => (
-        <div
-          key={i}
-          className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/20"
-        >
-          <HospitalMap lat={h.lat} lng={h.lng} />
-          <h3 className="text-white font-medium">{h.name}</h3>
-          <p className="text-white/60 text-sm">{h.address}</p>
-          {h.distance_km != null && (
-            <p className="text-white/50 text-xs mt-1">
-              {h.distance_km < 1
-                ? `${Math.round(h.distance_km * 1000)} m away`
-                : `${h.distance_km.toFixed(1)} km away`}
-            </p>
-          )}
-        </div>
-      ))}
+    <div className="space-y-6">
+      <div className="border-b border-white/20 pb-2">
+        <h2 className="text-2xl font-bold text-white">Nearby Hospitals & Clinics</h2>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {hospitals.map((h, i) => (
+          <div
+            key={i}
+            className="bg-white/10 backdrop-blur rounded-xl p-5 border border-white/20 flex flex-col justify-between"
+          >
+            <div>
+              <h3 className="text-white font-medium text-lg mb-1">{h.name}</h3>
+              <p className="text-white/70 text-sm">{h.address}</p>
+              {h.distance_km != null && (
+                <p className="text-white/50 text-xs mt-2">
+                  {h.distance_km < 1
+                    ? `${Math.round(h.distance_km * 1000)} m away`
+                    : `${h.distance_km.toFixed(1)} km away`}
+                </p>
+              )}
+            </div>
+            
+            <a 
+              href={`https://www.google.com/maps/search/?api=1&query=${h.lat},${h.lng}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors w-full"
+            >
+              View on Google Maps
+            </a>
+          </div>
+        ))}
+      </div>
+      
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold text-white mb-4">Map View</h3>
+        <HospitalMap lat={centerLat} lng={centerLng} />
+      </div>
     </div>
   );
 }
@@ -97,7 +122,7 @@ export default function Results() {
   // If navigated here directly without state, redirect home.
   if (!data) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="h-screen w-full overflow-y-auto bg-gray-950 flex items-center justify-center">
         <div className="text-center">
           <p className="text-white/60 mb-4">No results to display.</p>
           <Link to="/" className="text-blue-400 underline">
@@ -109,7 +134,7 @@ export default function Results() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-8">
+    <div className="h-screen w-full overflow-y-auto bg-gray-950 text-white p-4 sm:p-8">
       {/* Header */}
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-8">
