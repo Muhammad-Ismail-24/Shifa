@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     GOOGLE_PLACES_API_KEY: str = ""
     QDRANT_URL: str = ""
     QDRANT_API_KEY: str = ""
+    SERPAPI_KEY: str = ""
 
 
 # Singleton — import this instance everywhere

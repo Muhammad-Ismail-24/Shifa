@@ -9,6 +9,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { speakUrdu, cancelSpeech } from '../lib/speech';
 import type { AnalyzeResponse, Disease, Medicine, Hospital } from '../lib/types';
+import HospitalMap from '../components/HospitalMap';
 
 function DiseaseCard({ disease }: { disease: Disease }) {
   const confidenceColor =
@@ -64,6 +65,7 @@ function HospitalList({ hospitals }: { hospitals: Hospital[] }) {
           key={i}
           className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/20"
         >
+          <HospitalMap lat={h.lat} lng={h.lng} />
           <h3 className="text-white font-medium">{h.name}</h3>
           <p className="text-white/60 text-sm">{h.address}</p>
           {h.distance_km != null && (
