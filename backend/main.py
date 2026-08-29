@@ -107,7 +107,14 @@ async def analyze(body: AnalyzeRequest):
         triage = await evaluate_triage(latest_input=body.urdu_text, history=body.history)
     except Exception as e:
         logger.error(f"Triage evaluation failed: {e}")
-        triage = {"status": "proceed"}
+        return AnalyzeResponse(
+            diseases=[],
+            medicines=[],
+            hospitals=[],
+            response_text_urdu="معاف کیجئے گا، مجھے آپ کی بات سمجھ نہیں آئی۔ براہ کرم اپنی علامات دوبارہ بتائیں۔",
+            is_emergency=False,
+            disclaimer_urdu="براہ کرم اپنی علامات کے بارے میں مزید بتائیں۔"
+        )
 
     if triage.get("status") == "clarification_needed":
         logger.info("Triage: clarification needed — returning immediately.")

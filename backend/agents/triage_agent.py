@@ -32,7 +32,7 @@ async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
     )
 
     response = await client.aio.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-3.5-flash",
         contents=prompt,
         config=genai.types.GenerateContentConfig(response_mime_type="application/json")
     )

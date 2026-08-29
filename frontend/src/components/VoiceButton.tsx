@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { analyze } from '../lib/api';
 import { speakUrdu } from '../lib/speech';
 import type { ConversationMessage } from '../lib/types';
@@ -22,7 +22,7 @@ export default function VoiceButton() {
         setHistory(prev => [
           ...prev, 
           { role: "user", content: urdu_text }, 
-          { role: "model", content: response.response_text_urdu }
+          { role: "assistant", content: response.response_text_urdu }
         ]);
         
         speakUrdu(response.response_text_urdu);
