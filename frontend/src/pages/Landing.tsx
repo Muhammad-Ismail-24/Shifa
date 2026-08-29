@@ -112,6 +112,7 @@ export default function Landing() {
             }
             onRetry={session.retry}
             getWaveInputs={session.getWaveInputs}
+            onSubmit={session.submit}
           />
         </div>
       </main>

@@ -152,29 +152,8 @@ async def run_pipeline(
         }
 
     # ------------------------------------------------------------------
-    # Step 1: Triage — do we have enough context to diagnose?
+    # Step 1: (Moved to main.py to run first and alone)
     # ------------------------------------------------------------------
-    logger.info("Running triage evaluation...")
-    try:
-        triage = await evaluate_triage(latest_input=urdu_text, history=history)
-    except Exception as e:
-        logger.error(f"Triage evaluation failed: {e}")
-        # Default to proceed if triage fails — better to attempt diagnosis
-        triage = {"status": "proceed"}
-
-    if triage.get("status") == "clarification_needed":
-        logger.info("Triage: clarification needed — returning question.")
-        return {
-            "diseases": [],
-            "medicines": [],
-            "hospitals": [],
-            "response_text_urdu": triage.get(
-                "question_urdu",
-                "آپ کی تکلیف کے بارے میں مزید بتائیں۔",
-            ),
-            "is_emergency": False,
-            "disclaimer_urdu": CLARIFICATION_DISCLAIMER,
-        }
 
     # ------------------------------------------------------------------
     # Step 1b: Fire hospital search in the background immediately

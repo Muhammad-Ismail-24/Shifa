@@ -46,6 +46,8 @@ export interface VoiceSession {
     source: WaveSource;
     envelope: number;
   };
+  /** Force an immediate submission without waiting for VAD silence. */
+  submit: () => void;
 }
 
 export function useVoiceSession(): VoiceSession {
@@ -344,7 +346,8 @@ export function useVoiceSession(): VoiceSession {
       stop,
       retry,
       getWaveInputs,
+      submit: () => void submit(),
     }),
-    [state, userText, shifaText, errorMessage, level, mode, isEmergency, navigateToResults, clearNavigation, start, stop, retry, getWaveInputs],
+    [state, userText, shifaText, errorMessage, level, mode, isEmergency, navigateToResults, clearNavigation, start, stop, retry, getWaveInputs, submit],
   );
 }

@@ -100,6 +100,25 @@ async def analyze(body: AnalyzeRequest):
 
     # Import here to avoid circular imports during early startup
     from agents.orchestrator import run_pipeline
+    from agents.triage_agent import evaluate_triage
+
+    logger.info("Running triage evaluation in /analyze...")
+    try:
+        triage = await evaluate_triage(latest_input=body.urdu_text, history=body.history)
+    except Exception as e:
+        logger.error(f"Triage evaluation failed: {e}")
+        triage = {"status": "proceed"}
+
+    if triage.get("status") == "clarification_needed":
+        logger.info("Triage: clarification needed — returning immediately.")
+        return AnalyzeResponse(
+            diseases=[],
+            medicines=[],
+            hospitals=[],
+            response_text_urdu=triage.get("question_urdu", "آپ کی تکلیف کے بارے میں مزید بتائیں۔"),
+            is_emergency=False,
+            disclaimer_urdu="براہ کرم اپنی علامات کے بارے میں مزید بتائیں۔"
+        )
 
     result = await run_pipeline(
         body.urdu_text,
