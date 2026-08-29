@@ -18,17 +18,19 @@ async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
         OR
         {"status": "clarification_needed", "question_urdu": str}
     """
-    history_text = "\n".join(
-        f"{msg['role']}: {msg['content']}" for msg in history
-    ) if history else "(no previous conversation)"
+    history_text = "\n".join(f"{msg['role']}: {msg['content']}" for msg in history) if history else "No previous history."
+    
+    full_prompt = f"{TRIAGE_EVALUATION_PROMPT}\n\nConversation History:\n{history_text}\n\nLatest Patient Input:\n{latest_input}"
 
-    prompt = (
-        f"{TRIAGE_EVALUATION_PROMPT}\n\n"
-        f"History:\n{history_text}\n\n"
-        f"Latest message:\n{latest_input}"
-    )
-
-    raw_response = await generate_with_retry(prompt)
-    raw = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
-    return json.loads(raw)
+    raw_response = await generate_with_retry(full_prompt)
+    
+    raw_text = raw_response.strip()
+    if raw_text.startswith("```json"):
+        raw_text = raw_text[7:]
+    if raw_text.startswith("```"):
+        raw_text = raw_text[3:]
+    if raw_text.endswith("```"):
+        raw_text = raw_text[:-3]
+        
+    return json.loads(raw_text.strip())
 
