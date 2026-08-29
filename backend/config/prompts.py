@@ -33,7 +33,7 @@ CRITICAL TRIAGE RULES:
 - Example: "آپ کو بخار کتنے دن سے ہے؟ کیا اس کے ساتھ سردی یا الٹی بھی محسوس ہو رہی ہے؟" ✓
 - Example: "Please specify the duration" ✗
 
-صرف درست JSON جواب دو — کوئی اور متن، وضاحت، یا markdown نہ لکھو۔ (Respond ONLY with valid JSON).
+CRITICAL: Output strictly raw JSON. Do NOT wrap the JSON in ```json markdown blocks. Do not add any conversational text.
 
 اگر کافی معلومات ہیں (If enough info to proceed):
 {"status": "proceed"}
