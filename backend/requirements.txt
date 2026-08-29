@@ -10,7 +10,7 @@ pydantic-settings==2.3.1
 httpx==0.27.0
 
 # AI — Gemini (inference + embeddings)
-google-generativeai>=0.7.2
+google-genai
 
 # Vector store client
 qdrant-client>=1.9.1
