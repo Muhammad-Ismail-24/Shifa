@@ -18,9 +18,9 @@ def retrieve(query: str, k: int = 5) -> list[str]:
     from the Qdrant knowledge base.
     """
     vector = embed_query(query)
-    results = client.search(
+    results = client.query_points(
         collection_name=COLLECTION_NAME,
-        query_vector=vector,
+        query=vector,
         limit=k,
     )
-    return [hit.payload["text"] for hit in results]
+    return [hit.payload["text"] for hit in results.points]
