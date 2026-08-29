@@ -29,7 +29,6 @@ interface Props {
     source: WaveSource;
     envelope: number;
   };
-  onSubmit: () => void;
 }
 
 export function VoiceStatusCard({
@@ -42,7 +41,6 @@ export function VoiceStatusCard({
   errorMessage,
   onRetry,
   getWaveInputs,
-  onSubmit,
 }: Props) {
   const copy = CARD_COPY[state];
 
