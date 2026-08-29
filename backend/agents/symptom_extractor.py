@@ -3,11 +3,10 @@
 import json
 import logging
 from config.prompts import SYMPTOM_EXTRACTION_PROMPT
-from utils.model_router import generate_json_with_fallback_async
+from utils.ai_client import generate_with_retry
 from rag.retriever import retrieve
 
 logger = logging.getLogger(__name__)
-
 
 async def extract_symptoms(urdu_text: str) -> list[str]:
     """
@@ -35,6 +34,7 @@ async def extract_symptoms(urdu_text: str) -> list[str]:
         f"Patient said:\n{urdu_text}"
     )
 
-    raw = await generate_json_with_fallback_async(prompt)
+    raw_response = await generate_with_retry(prompt)
+    raw = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
     return json.loads(raw)
 

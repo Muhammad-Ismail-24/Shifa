@@ -2,8 +2,7 @@
 
 import json
 from config.prompts import RESPONSE_COMPOSER_PROMPT
-from utils.model_router import generate_json_with_fallback_async
-
+from utils.ai_client import generate_with_retry
 
 async def compose_response(
     diseases: list[dict],
@@ -37,7 +36,8 @@ async def compose_response(
 
     prompt = f"{RESPONSE_COMPOSER_PROMPT}\n\nData:\n{data_payload}"
 
-    raw = await generate_json_with_fallback_async(prompt)
+    raw_response = await generate_with_retry(prompt)
+    raw = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
 
     # Parse the JSON response to extract the Urdu text
     try:

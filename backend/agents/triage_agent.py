@@ -1,11 +1,8 @@
 # Turn 1: evaluate history + input → proceed or clarify
 
 import json
-from google import genai
-from config.settings import settings
 from config.prompts import TRIAGE_EVALUATION_PROMPT
-
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from utils.ai_client import generate_with_retry
 
 async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
     """
@@ -31,11 +28,7 @@ async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
         f"Latest message:\n{latest_input}"
     )
 
-    response = await client.aio.models.generate_content(
-        model="gemini-3.5-flash",
-        contents=prompt,
-        config=genai.types.GenerateContentConfig(response_mime_type="application/json")
-    )
-    raw = response.text.strip().removeprefix('```json').removesuffix('```').strip()
+    raw_response = await generate_with_retry(prompt)
+    raw = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
     return json.loads(raw)
 

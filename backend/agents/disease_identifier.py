@@ -2,9 +2,8 @@
 
 import json
 from config.prompts import DISEASE_IDENTIFICATION_PROMPT
-from utils.model_router import generate_json_with_fallback_async
+from utils.ai_client import generate_with_retry
 from rag.retriever import retrieve
-
 
 async def identify_diseases(symptoms: list[str]) -> list[dict]:
     """
@@ -28,6 +27,7 @@ async def identify_diseases(symptoms: list[str]) -> list[dict]:
         f"Symptoms: {symptoms}"
     )
 
-    raw = await generate_json_with_fallback_async(prompt)
+    raw_response = await generate_with_retry(prompt)
+    raw = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
     return json.loads(raw)
 
