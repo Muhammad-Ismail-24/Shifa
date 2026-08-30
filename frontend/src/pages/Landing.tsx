@@ -88,33 +88,6 @@ export default function Landing() {
 
         <ShifaNav menuOpen={menuOpen} onOpenMenu={() => setMenuOpen(true)} />
 
-        <div 
-          className="chat-history w-full max-w-4xl mx-auto flex flex-col gap-4 overflow-y-auto p-4" 
-          style={{ 
-            pointerEvents: 'auto', 
-            position: 'absolute', 
-            top: '100px', 
-            bottom: 'max(35vh, 250px)',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 15,
-          }}
-        >
-          {session.history?.map((msg, i) => (
-            <div key={i} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <UrduText
-                className={`max-w-[80%] rounded-2xl px-6 py-3 text-lg ${
-                  msg.role === 'user'
-                    ? 'bg-blue-600 text-white rounded-br-none'
-                    : 'bg-white/80 backdrop-blur text-gray-900 rounded-bl-none shadow-sm'
-                }`}
-              >
-                {msg.content}
-              </UrduText>
-            </div>
-          ))}
-        </div>
-
         <div className="hero-bottom">
           <div className="lede">
             <HeroCopy />
@@ -133,6 +106,7 @@ export default function Landing() {
             state={state}
             userText={previewText?.user ?? session.userText}
             shifaText={previewText?.shifa ?? session.shifaText}
+            history={session.history}
             errorMessage={
               preview === VoiceState.ERROR
                 ? "Shifa couldn't respond just now. Try once more."
