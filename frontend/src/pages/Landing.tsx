@@ -12,7 +12,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ArchitecturalRules } from '../components/landing/ArchitecturalRules';
-import { UrduText } from '../components/UrduText';
 import { HeroCopy } from '../components/landing/HeroCopy';
 import { HeroEnvironment } from '../components/landing/HeroEnvironment';
 import { MenuDrawer } from '../components/landing/MenuDrawer';
