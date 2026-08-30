@@ -16,7 +16,7 @@ import { UrduSpeechRecognizer, isSpeechRecognitionSupported } from './speechReco
 import { VoiceActivityDetector } from './voiceActivity';
 import { subscribeFrame } from './rafHub';
 import { VoiceState, canTransition, waveSourceFor, type VoiceStateValue, type WaveSource } from './voiceState';
-import { type AnalyzeResponse } from '../lib/types';
+import { type AnalyzeResponse, type ConversationMessage } from '../lib/types';
 
 export interface VoiceSession {
   state: VoiceStateValue;
@@ -36,6 +36,8 @@ export interface VoiceSession {
   latestResponse: AnalyzeResponse | null;
   /** Reset the navigation flag after the caller has navigated. */
   clearNavigation: () => void;
+  /** History of the conversation, excluding the current turn. */
+  history: ConversationMessage[];
   start: () => void;
   stop: () => void;
   retry: () => void;
@@ -54,6 +56,7 @@ export function useVoiceSession(): VoiceSession {
   const [state, setState] = useState<VoiceStateValue>(VoiceState.IDLE);
   const [userText, setUserText] = useState('');
   const [shifaText, setShifaText] = useState('');
+  const [history, setHistory] = useState<ConversationMessage[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [level, setLevel] = useState(0);
   const [isEmergency, setIsEmergency] = useState(false);
@@ -157,6 +160,7 @@ export function useVoiceSession(): VoiceSession {
       }
 
       setShifaText(reply);
+      setHistory((prev) => [...prev, { role: 'user', content: text }, { role: 'assistant', content: reply }]);
 
       if (!transition(VoiceState.SPEAKING)) return;
 
@@ -215,6 +219,7 @@ export function useVoiceSession(): VoiceSession {
     setIsEmergency(false);
     setUserText('');
     setShifaText('');
+    setHistory([]);
     clientRef.current!.resetConversation();
 
     // Warm the browser speech synthesis engine *synchronously* inside the user
@@ -355,6 +360,7 @@ export function useVoiceSession(): VoiceSession {
       state,
       userText,
       shifaText,
+      history,
       errorMessage,
       level,
       mode,
@@ -368,6 +374,6 @@ export function useVoiceSession(): VoiceSession {
       getWaveInputs,
       submit: () => void submit(),
     }),
-    [state, userText, shifaText, errorMessage, level, mode, isEmergency, navigateToResults, clearNavigation, start, stop, retry, getWaveInputs, submit],
+    [state, userText, shifaText, history, errorMessage, level, mode, isEmergency, navigateToResults, clearNavigation, start, stop, retry, getWaveInputs, submit],
   );
 }

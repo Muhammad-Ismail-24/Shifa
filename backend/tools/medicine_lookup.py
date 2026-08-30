@@ -37,5 +37,17 @@ def medicine_lookup(disease_name: str) -> dict:
             # "medicines" and "disclaimer_urdu" straight off the result.
             return info
 
-    logger.warning("No medicine data found for '%s'", disease_name)
-    return {"medicines": [], "disclaimer_urdu": "براہ کرم ڈاکٹر سے ملیں۔ خود علاجی نہ کریں۔"}
+    logger.warning(f"No medicine data found for '{disease_name}'")
+    return {
+        "medicines": [
+            {
+                "name": "Consult Doctor",
+                "name_urdu": "ڈاکٹر سے رجوع کریں",
+                "dosage_urdu": "اس بیماری کے لیے ڈاکٹر کا معائنہ ضروری ہے۔",
+                "otc": False
+            }
+        ],
+        "avoid_urdu": "ڈاکٹر کے مشورے کے بغیر کوئی دوا استعمال نہ کریں۔",
+        "see_doctor": True,
+        "disclaimer_urdu": "یہ ایک سنجیدہ مسئلہ ہو سکتا ہے۔ فوری طور پر قریبی ہسپتال یا ڈاکٹر سے رجوع کریں۔"
+    }
