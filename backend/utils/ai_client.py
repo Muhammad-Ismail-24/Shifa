@@ -4,7 +4,7 @@ from utils.logger import logger
 
 async def generate_with_retry(prompt: str, system_instruction: str = None) -> str:
     # Primary and fallback models
-    models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"]
+    models = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.7-flash"]
     max_retries = 3
 
     for model_name in models:
