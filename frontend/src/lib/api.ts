@@ -5,7 +5,7 @@
 // request shape stays in one reviewable place.
 
 import axios from 'axios';
-import type { AnalyzeRequest, AnalyzeResponse } from './types';
+import type { AnalyzeRequest, AnalyzeResponse, ScanMedicineRequest, ScanMedicineResponse } from './types';
 
 const baseURL = import.meta.env.VITE_API_URL ?? '';
 
@@ -56,3 +56,25 @@ export async function health(): Promise<boolean> {
     return false;
   }
 }
+
+export async function scanMedicine(payload: ScanMedicineRequest): Promise<ScanMedicineResponse> {
+  if (!isBackendConfigured) {
+    throw new ShifaApiError('network', 'VITE_API_URL is not configured');
+  }
+
+  try {
+    const { data } = await client.post<ScanMedicineResponse>('/scan-medicine', payload);
+    return data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      if (err.code === 'ECONNABORTED') {
+        throw new ShifaApiError('timeout', 'Shifa took too long to respond');
+      }
+      if (err.response) {
+        throw new ShifaApiError('server', `Backend returned ${err.response.status}`);
+      }
+    }
+    throw new ShifaApiError('network', 'Could not reach Shifa');
+  }
+}
+
