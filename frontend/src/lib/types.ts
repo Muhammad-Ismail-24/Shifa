@@ -69,3 +69,13 @@ export function isClarificationTurn(res: AnalyzeResponse): boolean {
     res.response_text_urdu.trim().length > 0
   );
 }
+
+export interface ScanMedicineRequest {
+  image_base64: string;
+  mime_type: string;
+}
+
+export interface ScanMedicineResponse {
+  medicine_name: string;
+  explanation_urdu: string;
+}

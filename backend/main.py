@@ -50,6 +50,16 @@ class AnalyzeResponse(BaseModel):
     disclaimer_urdu: str
 
 
+class ScanMedicineRequest(BaseModel):
+    image_base64: str
+    mime_type: str = "image/jpeg"
+
+
+class ScanMedicineResponse(BaseModel):
+    medicine_name: str
+    explanation_urdu: str
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -135,3 +145,21 @@ async def analyze(body: AnalyzeRequest):
     )
 
     return result
+
+
+@app.post("/scan-medicine", response_model=ScanMedicineResponse)
+async def scan_medicine(body: ScanMedicineRequest):
+    """
+    Visual Pill/Prescription Scanner endpoint.
+    Takes a base64 image, uses Gemini Vision to identify it,
+    and returns a simple Urdu explanation.
+    """
+    logger.info("POST /scan-medicine received image.")
+    from agents.scanner_agent import scan_medicine_image
+
+    result = await scan_medicine_image(body.image_base64, body.mime_type)
+
+    return ScanMedicineResponse(
+        medicine_name=result.get("medicine_name", "Unknown"),
+        explanation_urdu=result.get("explanation_urdu", "تصویر میں دوا کی شناخت نہیں ہو سکی۔")
+    )
