@@ -10,10 +10,12 @@ import Results from './pages/Results';
 import NotFound from './pages/NotFound';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import PillScanner from './components/PillScanner';
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/scanner" element={<PillScanner />} />
       <Route path="/" element={<Landing />} />
       <Route path="/results" element={<Results />} />
 

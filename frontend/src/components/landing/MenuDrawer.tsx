@@ -8,6 +8,7 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const LINKS = [
+  { label: 'Visual Pill Scanner', to: '/scanner', isProminent: true },
   { label: 'About Shifa', to: '/about' },
   { label: 'How it works', to: '/how-it-works' },
   { label: 'Privacy', to: '/privacy' },
@@ -79,7 +80,7 @@ export function MenuDrawer({ open, onClose }: Props) {
         <nav className="menu__nav">
           {LINKS.map((link) => (
             <Link
-              className="menu__link"
+              className={`menu__link ${link.isProminent ? 'font-bold text-green-600 bg-green-50 border border-green-200 rounded-lg p-2 mb-2' : ''}`}
               key={link.to}
               to={link.to}
               onClick={onClose}
