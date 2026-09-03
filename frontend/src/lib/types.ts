@@ -55,6 +55,8 @@ export interface AnalyzeResponse {
   response_text_urdu: string;
   is_emergency: boolean;
   disclaimer_urdu: string;
+  /** English SOAP note for clinical handoff (optional — only on full triage). */
+  soap_note_english?: string;
 }
 
 /**

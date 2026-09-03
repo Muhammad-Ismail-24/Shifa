@@ -6,6 +6,7 @@ Registers /health and /analyze endpoints.
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from typing import Optional
 
 from utils.logger import logger
 from utils.validators import validate_analyze_request
@@ -48,6 +49,7 @@ class AnalyzeResponse(BaseModel):
     response_text_urdu: str
     is_emergency: bool
     disclaimer_urdu: str
+    soap_note_english: Optional[str] = None
 
 
 class ScanMedicineRequest(BaseModel):

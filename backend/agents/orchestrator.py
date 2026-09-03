@@ -233,9 +233,26 @@ async def run_pipeline(
             logger.error(f"Hospital search failed: {e}")
 
     # ------------------------------------------------------------------
-    # Step 6: Compose final Urdu response
+    # Step 6: Compose final Urdu response + SOAP note (concurrently)
     # ------------------------------------------------------------------
-    logger.info("Composing final Urdu response...")
+    logger.info("Composing final Urdu response + SOAP note...")
+
+    # Fire SOAP note generation concurrently with response composition
+    soap_task: asyncio.Task | None = None
+    try:
+        from agents.soap_agent import generate_soap_note
+
+        soap_task = asyncio.create_task(
+            generate_soap_note(
+                diseases=diseases,
+                medicines=medicines_data,
+                symptoms=symptoms,
+                original_text=urdu_text,
+            )
+        )
+    except Exception as e:
+        logger.error(f"Could not launch SOAP note generation: {e}")
+
     try:
         response_text = await compose_response(diseases, medicines_data, hospitals)
     except Exception as e:
@@ -245,6 +262,14 @@ async def run_pipeline(
             "براہ کرم جلد ڈاکٹر سے ملیں۔ "
             "یہ صرف عمومی معلومات ہے — ڈاکٹر سے ضرور ملیں۔"
         )
+
+    # Await SOAP note result
+    soap_note = None
+    if soap_task is not None:
+        try:
+            soap_note = await soap_task
+        except Exception as e:
+            logger.error(f"SOAP note generation failed: {e}")
 
     # ------------------------------------------------------------------
     # Return final structured response
@@ -263,4 +288,6 @@ async def run_pipeline(
             medicines_data.get("disclaimer_urdu", DISCLAIMER_URDU)
             if isinstance(medicines_data, dict) else DISCLAIMER_URDU
         ),
+        "soap_note_english": soap_note,
     }
+

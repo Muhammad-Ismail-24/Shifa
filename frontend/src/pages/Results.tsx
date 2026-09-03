@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { speakUrdu, cancelSpeech } from '../lib/speech';
 import type { AnalyzeResponse, Disease, Medicine, Hospital } from '../lib/types';
 import HospitalMap from '../components/HospitalMap';
+import ClinicalHandoff from '../components/ClinicalHandoff';
 
 function DiseaseCard({ disease }: { disease: Disease }) {
   const confidenceColor =
@@ -194,6 +195,13 @@ export default function Results() {
         {data.hospitals.length > 0 && (
           <div className="mb-6">
             <HospitalList hospitals={data.hospitals as Hospital[]} />
+          </div>
+        )}
+
+        {/* Clinical Handoff QR (SOAP Note) */}
+        {data.soap_note_english && (
+          <div className="mb-6">
+            <ClinicalHandoff soapNote={data.soap_note_english} />
           </div>
         )}
 
