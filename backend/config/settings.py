@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     QDRANT_API_KEY: str = ""
     SERPAPI_KEY: str = ""
 
+    # GreenAPI WhatsApp integration
+    GREENAPI_ID_INSTANCE: str = ""
+    GREENAPI_API_TOKEN: str = ""
+
 
 # Singleton — import this instance everywhere
 settings = Settings()

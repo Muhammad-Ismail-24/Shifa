@@ -3,7 +3,7 @@ Shifa — FastAPI backend entry point.
 Registers /health and /analyze endpoints.
 """
 
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -163,4 +163,32 @@ async def scan_medicine(body: ScanMedicineRequest):
         medicine_name=result.get("medicine_name", "Unknown"),
         explanation_urdu=result.get("explanation_urdu", "تصویر میں دوا کی شناخت نہیں ہو سکی۔")
     )
+
+
+# ---------------------------------------------------------------------------
+# WhatsApp Webhook (Feature 1.8 — GreenAPI)
+# ---------------------------------------------------------------------------
+@app.post("/whatsapp-webhook")
+async def whatsapp_webhook(request: Request, background_tasks: BackgroundTasks):
+    """
+    GreenAPI webhook receiver.
+
+    Returns 200 immediately so GreenAPI does not retry.
+    The actual AI processing + reply happens in a background task.
+    """
+    from utils.whatsapp import parse_incoming_message, process_and_reply
+
+    payload = await request.json()
+
+    parsed = parse_incoming_message(payload)
+    if parsed is None:
+        # Not a text message we care about — acknowledge and ignore
+        return {"status": "ok"}
+
+    chat_id, text = parsed
+    logger.info("WhatsApp incoming from %s — queueing background task", chat_id)
+
+    background_tasks.add_task(process_and_reply, chat_id, text)
+
+    return {"status": "ok"}
 
