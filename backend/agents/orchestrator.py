@@ -93,9 +93,13 @@ async def run_phase_b(
     top_disease: str,
     latitude: float,
     longitude: float,
+    *,
+    diseases: list | None = None,
+    symptoms: list | None = None,
+    original_text: str = "",
 ) -> dict:
     """
-    Fetch medicines and nearby hospitals concurrently.
+    Fetch medicines, nearby hospitals, and generate SOAP note concurrently.
 
     Split out of the main pipeline so the patient hears Shifa's answer as soon
     as the diagnosis is ready instead of waiting on a Places round-trip.
@@ -189,12 +193,23 @@ async def run_phase_b(
         medicines_status, len(medicines), hospitals_status, len(hospitals),
     )
 
+    # ---- SOAP note (optional, fire-and-forget) ----
+    soap_note: str | None = None
+    if diseases:
+        soap_note = await _generate_soap_note_safe(
+            diseases=diseases,
+            medicines=medicines,
+            symptoms=symptoms,
+            original_text=original_text,
+        )
+
     return {
         "medicines": medicines,
         "hospitals": hospitals,
         "disclaimer_urdu": disclaimer,
         "medicines_status": medicines_status,
         "hospitals_status": hospitals_status,
+        "soap_note_english": soap_note,
     }
 
 

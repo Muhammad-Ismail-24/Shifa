@@ -20,6 +20,7 @@
 
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
+import ClinicalHandoff from '../components/ClinicalHandoff';
 import DiseaseCard from '../components/DiseaseCard';
 import EmergencyAlert from '../components/EmergencyAlert';
 import HospitalMap from '../components/HospitalMap';
@@ -61,6 +62,8 @@ interface Results {
   hospitalsStatus: EnrichmentStatus;
   /** The hospital search used the fallback location, not the patient's own. */
   approximateLocation: boolean;
+  /** English SOAP note for clinical handoff (arrives with Phase B). */
+  soapNoteEnglish: string | null;
 }
 
 
@@ -227,6 +230,7 @@ export default function Home() {
           medicines: response.medicines ?? [],
           hospitals: response.hospitals ?? [],
           disclaimerUrdu: response.disclaimer_urdu,
+          soapNoteEnglish: null,
           // No session id means the backend scheduled no enrichment, so there
           // is nothing to wait for — report it as failed rather than leaving
           // the cards spinning forever.
@@ -253,6 +257,7 @@ export default function Home() {
                 hospitals: enrichment.hospitals,
                 medicinesStatus: enrichment.medicines_status,
                 hospitalsStatus: enrichment.hospitals_status,
+                soapNoteEnglish: enrichment.soap_note_english ?? null,
               };
             });
           })
@@ -450,6 +455,13 @@ export default function Home() {
                   <HospitalMap lat={results.hospitals[0].lat} lng={results.hospitals[0].lng} />
                 )}
               </div>
+
+              {/* Clinical Handoff QR (SOAP Note) — arrives with Phase B */}
+              {results.soapNoteEnglish && (
+                <div className="animate-fade-in" style={{ animationDelay: '600ms' }}>
+                  <ClinicalHandoff soapNote={results.soapNoteEnglish} />
+                </div>
+              )}
             </section>
           )}
         </main>

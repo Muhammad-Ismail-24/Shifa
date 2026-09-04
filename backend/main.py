@@ -129,6 +129,7 @@ class ResultsResponse(BaseModel):
     hospitals: list
     medicines_status: str = "ok"
     hospitals_status: str = "ok"
+    soap_note_english: Optional[str] = None
 
 
 class ScanMedicineRequest(BaseModel):
@@ -258,7 +259,11 @@ async def analyze(body: AnalyzeRequest):
     if result.pop("needs_phase_b", False):
         top_disease = result.pop("top_disease", "Unknown")
         task = asyncio.create_task(
-            run_phase_b(top_disease, body.latitude, body.longitude)
+            run_phase_b(
+                top_disease, body.latitude, body.longitude,
+                diseases=result.get("diseases", []),
+                original_text=body.urdu_text,
+            )
         )
         session_id = session_store.create_session(task)
         logger.info("Phase B launched for session %s (%s).", session_id, top_disease)
@@ -304,6 +309,7 @@ async def results(session_id: str):
         hospitals=data.get("hospitals", []),
         medicines_status=data.get("medicines_status", "ok"),
         hospitals_status=data.get("hospitals_status", "ok"),
+        soap_note_english=data.get("soap_note_english"),
     )
 
 

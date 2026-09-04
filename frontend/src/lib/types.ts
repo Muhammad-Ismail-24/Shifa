@@ -86,6 +86,8 @@ export interface ResultsResponse {
   hospitals: Hospital[];
   medicines_status: LookupStatus;
   hospitals_status: LookupStatus;
+  /** English SOAP note for clinical handoff (generated in Phase B). */
+  soap_note_english?: string;
 }
 
 /** One rendered turn in the chat panel. */
