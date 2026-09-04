@@ -106,6 +106,21 @@ Rules:
 - Do NOT include any explanation, preamble, or markdown.
 - Respond with valid JSON only.
 
+CLINICAL PRE-TEST PROBABILITY GUARDRAILS (MANDATORY):
+- NEGATIVE SYMPTOM WEIGHTING: If the patient explicitly denies red-flag symptoms
+  (e.g., says "or kuch bhi nhi" / nothing else, no high fever, no chest pain,
+  breathing is normal), you MUST rank benign, common conditions FIRST —
+  Seasonal Allergy / Allergic Cough, Common Cold, Viral URTI.
+  An explicit absence of severe symptoms is strong evidence toward benign causes.
+- SEVERE LOWER RESPIRATORY EXCLUSION: Pneumonia or acute respiratory distress
+  MUST NOT be marked "high" confidence unless AT LEAST TWO of these critical
+  red flags are present: (1) high fever, (2) severe dyspnea / breathlessness,
+  (3) localized pleuritic chest pain, (4) hemoptysis (blood in sputum).
+  With fewer than two red flags, such conditions may appear only at "low"
+  confidence — or must be excluded entirely. A mild 3-to-4-day cough with
+  normal breathing is most likely benign; never escalate it to Pneumonia or
+  COVID-19 without those red flags.
+
 Output format — a JSON array of objects:
 [
   {"disease": "Typhoid Fever", "confidence": "high", "urdu": "ٹائیفائیڈ بخار"},
@@ -135,7 +150,7 @@ RESPONSE_COMPOSER_PROMPT = """\
 ان سب کو ملا کر ایک مکمل جواب بناؤ جو مریض کو بول کر سنایا جائے گا۔
 
 جواب میں یہ باتیں شامل کرو:
-1. بیماری کا نام سادہ اردو میں
+1. ممکنہ وجوہات سادہ اردو میں — ہمیشہ "ممکن ہے / ہو سکتی ہیں" کے انداز میں، قطعی بیماری کا اعلان نہیں
 2. بیماری کی مختصر وضاحت — بالکل آسان الفاظ میں، دو تین جملوں میں
 3. دوائیں اور ان کی مقدار — جیسے "ایک گولی ہر چھ گھنٹے بعد"
 4. قریبی ہسپتال کا نام اور فاصلہ
@@ -149,6 +164,17 @@ RESPONSE_COMPOSER_PROMPT = """\
 - انگریزی الفاظ صرف دوائیوں کے نام کے لیے (جیسے پیناڈول، او آر ایس)
 - مریض کو "آپ" کہہ کر مخاطب کرو
 - لہجہ نرم اور ہمدردانہ رکھو
+
+طبی حفاظت کے سخت اصول (ہر جواب میں لازمی):
+1. قطعی تشخیص منع ہے: کبھی نہ کہو "آپ کو [بیماری] ہو گیا ہے" اور نہ کوئی اور حتمی
+   طبی دعویٰ کرو۔ تم ڈاکٹر نہیں ہو — صرف ممکنہ وجوہات کی رہنمائی کرو۔
+2. ممکنہ وجوہات کے انداز میں بتاؤ: ہمیشہ اس طرح لکھو:
+   "یہ علامات عام موسمی الرجی، گلے کی خراش یا نزلہ زکام کی وجہ سے ہو سکتی ہیں..."
+   یعنی "ہو سکتا ہے"، "ممکن ہے"، "ہو سکتی ہیں" جیسے الفاظ استعمال کرو۔
+3. پرسکون اور تسلی بخش لہجہ: اگر مریض نے کوئی خطرناک علامت نہیں بتائی (تیز بخار،
+   سانس کی شدید تکلیف، سینے میں درد وغیرہ)، تو لہجہ بالکل پرسکون رکھو۔ گھریلو
+   دیکھ بھال کا مشورہ دو (آرام، پانی، گرم مشروب) اور کہو کہ اگر آرام نہ آئے تو
+   مقامی ڈاکٹر سے مشورہ کریں — بلا ضرورت خوف یا گھبراہٹ مت پیدا کرو۔
 
 صرف درست JSON جواب دو — کوئی اور متن، وضاحت، یا markdown نہ لکھو۔
 

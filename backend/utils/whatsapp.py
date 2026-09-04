@@ -34,16 +34,36 @@ def parse_incoming_message(payload: dict) -> tuple[str, str] | None:
     chat_id = sender_data.get("chatId", "")
 
     message_data = payload.get("messageData", {})
-    text_message_data = message_data.get("textMessageData")
-    if not text_message_data:
-        # Not a text message (could be image, video, etc.) — skip
+
+    # Safely extract text across Mobile, Web, Desktop, and Quoted responses.
+    # WhatsApp Web/Desktop and replied messages put the text in
+    # extendedTextMessageData.text; standard mobile messages use
+    # textMessageData.textMessage.
+    incoming_text = (
+        message_data.get("textMessageData", {}).get("textMessage")
+        or message_data.get("extendedTextMessageData", {}).get("text")
+        or ""
+    ).strip()
+
+    if not incoming_text:
+        # Never let an unhandled message shape vanish invisibly again.
+        logger.warning(
+            "WhatsApp incoming from %s — no extractable text (typeMessage=%s); dropping.",
+            chat_id or "unknown-chat",
+            message_data.get("typeMessage", "unknown"),
+        )
         return None
 
-    text = text_message_data.get("textMessage", "").strip()
-    if not text or not chat_id:
+    if not chat_id:
+        logger.warning("WhatsApp incoming text dropped — sender chatId is empty.")
         return None
 
-    return chat_id, text
+    logger.info(
+        "WhatsApp incoming text from %s — resolved text length=%d.",
+        chat_id, len(incoming_text),
+    )
+
+    return chat_id, incoming_text
 
 
 async def send_whatsapp_reply(chat_id: str, message: str) -> None:
