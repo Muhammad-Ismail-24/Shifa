@@ -197,6 +197,26 @@ it; the menu's Home link missing.
 
 ---
 
+## Verification status
+
+Last full run: all green.
+
+| Check | Result |
+| --- | --- |
+| Backend suite | 47 passed |
+| Backend import / boot | OK — routes, CORS middleware and both lifecycle hooks present |
+| Frontend typecheck | clean |
+| Frontend production build | clean |
+| Frontend suite | 56 passed (28 pre-existing + 28 new) |
+| Manual scenarios A–K | all pass |
+
+> **Note on running the frontend toolchain.** `tsc`, `vite` and `vitest` were
+> observed hanging at Node bootstrap (0% CPU inside `node::LoadEnvironment`)
+> when run from inside `~/Documents` on a machine under storage pressure. The
+> same commit passes everything from a local working copy outside that
+> directory. If the toolchain appears to hang rather than fail, check free disk
+> space and swap before suspecting the code.
+
 ## Automated tests
 
 ```bash

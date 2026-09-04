@@ -63,7 +63,9 @@ function deferred<T>() {
 
 function renderHome() {
   return render(
-    <MemoryRouter>
+    // Same future flags main.tsx opts into, so the test renders under the
+    // router semantics the app actually ships with (and without the warnings).
+    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Home />
     </MemoryRouter>,
   );
