@@ -599,7 +599,16 @@ html, body, #root {
 }
 .menu__close:hover { opacity: 0.6; }
 
-.menu__nav { display: flex; flex-direction: column; }
+/* The panel is a fixed 100% height, so the link list is what scrolls when the
+   menu grows past a short viewport. Parent clips, child scrolls. */
+.menu__nav {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.menu__panel { overflow: hidden; }
 
 .menu__link {
   display: flex;
@@ -639,6 +648,8 @@ html, body, #root {
 .menu.is-open .menu__link:nth-child(3) { transition-delay: 300ms; }
 .menu.is-open .menu__link:nth-child(4) { transition-delay: 375ms; }
 .menu.is-open .menu__link:nth-child(5) { transition-delay: 450ms; }
+.menu.is-open .menu__link:nth-child(6) { transition-delay: 525ms; }
+.menu.is-open .menu__link:nth-child(7) { transition-delay: 600ms; }
 
 .menu__foot {
   margin-top: auto;

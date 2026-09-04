@@ -1,12 +1,11 @@
-// React Router ?" all route definitions.
+// React Router — all route definitions.
 
 import { Routes, Route } from 'react-router-dom';
 
 import About from './pages/About';
 import Contact from './pages/Contact';
 import HowItWorks from './pages/HowItWorks';
-import Landing from './pages/Landing';
-import Results from './pages/Results';
+import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
@@ -15,9 +14,11 @@ import PillScanner from './components/PillScanner';
 export default function App() {
   return (
     <Routes>
+      {/* The whole application lives on "/": conversation and findings side by
+          side. There is no separate results route — a spoken conversation must
+          not be interrupted by a page change to read the answer. */}
+      <Route path="/" element={<Home />} />
       <Route path="/scanner" element={<PillScanner />} />
-      <Route path="/" element={<Landing />} />
-      <Route path="/results" element={<Results />} />
 
       {/* The five informational pages. These are the destinations in the menu
           drawer and the document footer. */}

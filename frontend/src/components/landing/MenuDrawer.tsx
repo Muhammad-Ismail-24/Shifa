@@ -7,7 +7,11 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
+// Home is first and always present: every other page in this drawer is a
+// document, and a patient who wandered into one needs one obvious way back to
+// the thing that answers questions.
 const LINKS = [
+  { label: 'Home', to: '/' },
   { label: 'Visual Pill Scanner', to: '/scanner', isProminent: true },
   { label: 'About Shifa', to: '/about' },
   { label: 'How it works', to: '/how-it-works' },
@@ -77,7 +81,7 @@ export function MenuDrawer({ open, onClose }: Props) {
           <span>Close</span>
         </button>
 
-        <nav className="menu__nav">
+        <nav className="menu__nav h-full overflow-y-auto flex flex-col">
           {LINKS.map((link) => (
             <Link
               className={`menu__link ${link.isProminent ? 'font-bold text-green-600 bg-green-50 border border-green-200 rounded-lg p-2 mb-2' : ''}`}

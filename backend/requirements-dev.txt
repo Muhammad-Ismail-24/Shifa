@@ -1,0 +1,13 @@
+# Test-only dependencies. Install alongside requirements.txt to run pytest:
+#
+#     pip install -r requirements.txt -r requirements-dev.txt
+#     pytest
+#
+# The suite needs Python 3.10+ — the application uses PEP 604 annotations
+# (`dict | None`) that 3.9 evaluates at definition time and rejects.
+pytest==8.3.3
+pytest-asyncio==0.24.0
+
+# httpx is already a runtime dependency; TestClient needs it too, and it is
+# repeated here so this file stands alone if the runtime one ever drops it.
+httpx==0.27.0
