@@ -171,4 +171,5 @@ async def test_phase_b_never_raises(tools):
     assert set(result) == {
         "medicines", "hospitals", "disclaimer_urdu",
         "medicines_status", "hospitals_status",
+        "soap_note_english",
     }

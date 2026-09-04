@@ -230,7 +230,7 @@ export default function Home() {
           medicines: response.medicines ?? [],
           hospitals: response.hospitals ?? [],
           disclaimerUrdu: response.disclaimer_urdu,
-          soapNoteEnglish: null,
+          soapNoteEnglish: response.soap_note_english ?? null,
           // No session id means the backend scheduled no enrichment, so there
           // is nothing to wait for — report it as failed rather than leaving
           // the cards spinning forever.
@@ -257,7 +257,7 @@ export default function Home() {
                 hospitals: enrichment.hospitals,
                 medicinesStatus: enrichment.medicines_status,
                 hospitalsStatus: enrichment.hospitals_status,
-                soapNoteEnglish: enrichment.soap_note_english ?? null,
+                soapNoteEnglish: enrichment.soap_note_english ?? prev.soapNoteEnglish,
               };
             });
           })

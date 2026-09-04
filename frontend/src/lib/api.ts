@@ -92,6 +92,7 @@ export async function fetchResults(
       hospitals: data?.hospitals ?? [],
       medicines_status: data?.medicines_status ?? 'ok',
       hospitals_status: data?.hospitals_status ?? 'ok',
+      soap_note_english: data?.soap_note_english,
     };
   } catch (err) {
     if (axios.isCancel(err)) throw err; // the caller aborted; not a lookup failure

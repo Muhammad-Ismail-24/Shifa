@@ -48,7 +48,13 @@ def _patch_pipeline(monkeypatch, *, triage=None, phase_a=None, phase_b=None):
     if phase_a is not None:
         monkeypatch.setattr(orch, "run_pipeline_phase_a", phase_a)
     if phase_b is not None:
-        monkeypatch.setattr(orch, "run_phase_b", phase_b)
+        async def _tolerant_phase_b(disease, lat, lng, **kwargs):
+            try:
+                return await phase_b(disease, lat, lng, **kwargs)
+            except TypeError:
+                return await phase_b(disease, lat, lng)
+
+        monkeypatch.setattr(orch, "run_phase_b", _tolerant_phase_b)
 
 
 BODY = {"urdu_text": "مجھے دو دن سے بخار ہے", "latitude": 33.6, "longitude": 73.0, "history": []}
@@ -78,7 +84,7 @@ def _phase_a(**overrides):
 # ---------------------------------------------------------------------------
 
 def test_analyze_returns_session_id_and_empty_enrichment(client, monkeypatch):
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, *args, **kwargs):
         return {
             "medicines": [{"name": "Paracetamol"}],
             "hospitals": [],
@@ -137,7 +143,7 @@ def test_emergency_returns_immediately_with_no_enrichment(client, monkeypatch):
     """
     called = {"phase_b": False}
 
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, *args, **kwargs):
         called["phase_b"] = True
         return {"medicines": [], "hospitals": [], "disclaimer_urdu": "d",
                 "medicines_status": "ok", "hospitals_status": "ok"}
@@ -191,7 +197,7 @@ def _analyze_then_results(client, monkeypatch, phase_b):
 
 
 def test_results_success(client, monkeypatch):
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, *args, **kwargs):
         return {
             "medicines": [{"name": "Paracetamol"}],
             "hospitals": [{"name": "PIMS", "lat": 33.7, "lng": 73.0}],
@@ -210,7 +216,7 @@ def test_results_success(client, monkeypatch):
 
 
 def test_results_partial_failure_is_reported_per_lookup(client, monkeypatch):
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, *args, **kwargs):
         return {
             "medicines": [{"name": "Paracetamol"}],
             "hospitals": [],
@@ -230,7 +236,7 @@ def test_results_task_raising_is_200_with_failed_status(client, monkeypatch):
     Not a 500. The patient already has a correct medical answer on screen;
     turning missing enrichment into a red error would misrepresent it.
     """
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, *args, **kwargs):
         raise RuntimeError("everything is on fire")
 
     res = _analyze_then_results(client, monkeypatch, phase_b)
@@ -249,7 +255,7 @@ def test_results_unknown_session_is_404(client):
 def test_results_expired_session_is_404(client, monkeypatch):
     import time
 
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, *args, **kwargs):
         return {"medicines": [], "hospitals": [], "disclaimer_urdu": "d",
                 "medicines_status": "ok", "hospitals_status": "ok"}
 
@@ -263,7 +269,7 @@ def test_results_expired_session_is_404(client, monkeypatch):
 
 
 def test_results_can_be_fetched_twice(client, monkeypatch):
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, *args, **kwargs):
         return {"medicines": [{"name": "A"}], "hospitals": [], "disclaimer_urdu": "d",
                 "medicines_status": "ok", "hospitals_status": "ok"}
 
@@ -280,7 +286,7 @@ def test_concurrent_consultations_get_their_own_results(client, monkeypatch):
     Two overlapping consultations must not swap enrichment. The session id is
     the only thing tying a result to its request.
     """
-    async def phase_b(disease, lat, lng):
+    async def phase_b(disease, lat, lng, **kwargs):
         await asyncio.sleep(0.01)
         return {
             "medicines": [{"name": disease}],
@@ -375,3 +381,135 @@ def test_cors_preflight_allows_dev_origin(client):
         },
     )
     assert res.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
+# ---------------------------------------------------------------------------
+# Health & Other Endpoints
+# ---------------------------------------------------------------------------
+
+def test_health_endpoint(client):
+    res = client.get("/health")
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+
+
+def test_scan_medicine_endpoint(client, monkeypatch):
+    import agents.scanner_agent as scanner_mod
+
+    async def fake_scan(image_base64, mime_type="image/jpeg"):
+        return {
+            "medicine_name": "Panadol 500mg",
+            "explanation_urdu": "یہ دوا سر درد اور بخار کے لیے استعمال ہوتی ہے۔",
+        }
+
+    monkeypatch.setattr(scanner_mod, "scan_medicine_image", fake_scan)
+
+    res = client.post(
+        "/scan-medicine",
+        json={"image_base64": "fakebase64data", "mime_type": "image/jpeg"},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["medicine_name"] == "Panadol 500mg"
+    assert "بخار" in data["explanation_urdu"]
+
+
+def test_whatsapp_webhook_valid_message(client, monkeypatch):
+    from utils import whatsapp as wa_mod
+
+    called = []
+
+    async def fake_process_and_reply(chat_id, text):
+        called.append((chat_id, text))
+
+    monkeypatch.setattr(wa_mod, "process_and_reply", fake_process_and_reply)
+
+    payload = {
+        "typeWebhook": "incomingMessageReceived",
+        "senderData": {"chatId": "923001234567@c.us"},
+        "messageData": {
+            "textMessageData": {"textMessage": "مجھے بخار ہے"}
+        },
+    }
+
+    res = client.post("/whatsapp-webhook", json=payload)
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+    assert called == [("923001234567@c.us", "مجھے بخار ہے")]
+
+
+def test_whatsapp_webhook_ignores_non_text(client, monkeypatch):
+    from utils import whatsapp as wa_mod
+
+    called = []
+
+    async def fake_process_and_reply(chat_id, text):
+        called.append((chat_id, text))
+
+    monkeypatch.setattr(wa_mod, "process_and_reply", fake_process_and_reply)
+
+    # Status update webhook
+    payload = {
+        "typeWebhook": "outgoingMessageStatus",
+        "status": "delivered",
+    }
+
+    res = client.post("/whatsapp-webhook", json=payload)
+    assert res.status_code == 200
+    assert res.json() == {"status": "ok"}
+    assert len(called) == 0
+
+
+def test_whatsapp_parse_incoming_message():
+    from utils.whatsapp import parse_incoming_message
+
+    # Valid
+    payload = {
+        "typeWebhook": "incomingMessageReceived",
+        "senderData": {"chatId": "123@c.us"},
+        "messageData": {"textMessageData": {"textMessage": "hello"}},
+    }
+    assert parse_incoming_message(payload) == ("123@c.us", "hello")
+
+    # Missing text
+    empty_text = {
+        "typeWebhook": "incomingMessageReceived",
+        "senderData": {"chatId": "123@c.us"},
+        "messageData": {"textMessageData": {"textMessage": "  "}},
+    }
+    assert parse_incoming_message(empty_text) is None
+
+    # Missing chatId
+    no_chat = {
+        "typeWebhook": "incomingMessageReceived",
+        "senderData": {},
+        "messageData": {"textMessageData": {"textMessage": "hello"}},
+    }
+    assert parse_incoming_message(no_chat) is None
+
+
+async def test_soap_agent_generation(monkeypatch):
+    from agents import soap_agent
+
+    class FakeResponse:
+        text = "S: Fever. O: Vitals stable. A: Viral Fever. P: Paracetamol."
+
+    class FakeModel:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def generate_content(self, prompt):
+            return FakeResponse()
+
+    monkeypatch.setattr(soap_agent.genai, "GenerativeModel", FakeModel)
+
+    note = await soap_agent.generate_soap_note(
+        diseases=[{"disease": "Viral Fever", "confidence": "high"}],
+        medicines=[{"name": "Paracetamol"}],
+        symptoms=["fever"],
+        original_text="بخار ہے",
+    )
+    assert note is not None
+    assert "Viral Fever" in note
+    assert len(note) <= 500
+
