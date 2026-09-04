@@ -11,7 +11,14 @@ import { Link } from 'react-router-dom';
 import { PageShell } from '../components/informational/PageShell';
 import { ArrowRight } from '../components/informational/icons';
 
+// Home comes first, and it is not optional. Since the route restructure "/" is
+// the whole application rather than a marketing page, so a 404 list without it
+// leaves someone following a stale link (an old /results bookmark, say) with no
+// route back to the thing that answers their question — while the copy above
+// promises this is everything Shifa has.
 const DESTINATIONS = [
+  { label: 'Home', to: '/' },
+  { label: 'Visual Pill Scanner', to: '/scanner' },
   { label: 'About Shifa', to: '/about' },
   { label: 'How it works', to: '/how-it-works' },
   { label: 'Privacy', to: '/privacy' },

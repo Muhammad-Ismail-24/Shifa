@@ -48,6 +48,11 @@ export interface AnalyzeRequest {
 }
 
 export interface AnalyzeResponse {
+  /**
+   * Phase B handle. Present only when the turn produced something to look up —
+   * null on a triage clarification, so its absence is the signal not to fetch.
+   */
+  session_id: string | null;
   diseases: Disease[];
   medicines: Medicine[];
   hospitals: Hospital[];
@@ -55,6 +60,42 @@ export interface AnalyzeResponse {
   response_text_urdu: string;
   is_emergency: boolean;
   disclaimer_urdu: string;
+}
+
+/**
+ * Outcome of one Phase B lookup.
+ *
+ * The distinction is clinical, not cosmetic. An `ok` result with an empty list
+ * means "the lookup ran and found nothing for this condition". `failed` and
+ * `expired` mean "we do not know". Rendering the second as the first tells a
+ * patient there is no treatment available when in fact a service errored.
+ */
+export type LookupStatus = 'ok' | 'failed' | 'expired';
+
+/** Phase B as the UI sees it: the wire statuses plus "not back yet". */
+export type EnrichmentStatus = LookupStatus | 'loading';
+
+/**
+ * GET /results/:session_id — the two slow lookups, resolved after the
+ * conversational reply is already on screen.
+ */
+export interface ResultsResponse {
+  medicines: Medicine[];
+  hospitals: Hospital[];
+  medicines_status: LookupStatus;
+  hospitals_status: LookupStatus;
+}
+
+/** One rendered turn in the chat panel. */
+export interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  /** Urdu text. Empty while `pending` — the bubble renders a typing indicator. */
+  content: string;
+  /** The placeholder bubble shown between submit and response. */
+  pending?: boolean;
+  /** A failed turn, styled apart from a real answer. */
+  error?: boolean;
 }
 
 /**

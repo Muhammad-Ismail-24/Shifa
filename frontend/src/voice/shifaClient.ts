@@ -88,6 +88,7 @@ export class ShifaVoiceClient {
     this.mockTurn += 1;
 
     return {
+      session_id: null,
       diseases: [],
       medicines: [],
       hospitals: [],
