@@ -1,4 +1,4 @@
-# Turn 3: symptoms + RAG chunks → diseases
+# Turn 3: symptoms + RAG chunks   → diseases
 
 import json
 from config.prompts import DISEASE_IDENTIFICATION_PROMPT
