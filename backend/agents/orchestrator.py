@@ -329,6 +329,35 @@ async def run_pipeline_phase_a(
 
 
 # ---------------------------------------------------------------------------
+# SOAP note generation — called after Phase B completes (full data available)
+# ---------------------------------------------------------------------------
+
+async def _generate_soap_note_safe(
+    diseases: list,
+    medicines: list | dict,
+    symptoms: list | None = None,
+    original_text: str = "",
+) -> str | None:
+    """
+    Generate a compact English SOAP note for clinical handoff.
+
+    Wrapped in a try/except so SOAP note failure never breaks the pipeline.
+    """
+    try:
+        from agents.soap_agent import generate_soap_note
+
+        return await generate_soap_note(
+            diseases=diseases,
+            medicines=medicines,
+            symptoms=symptoms,
+            original_text=original_text,
+        )
+    except Exception as e:
+        logger.error(f"SOAP note generation failed: {e}")
+        return None
+
+
+# ---------------------------------------------------------------------------
 # Single-shot pipeline — Phase A + Phase B awaited together
 # ---------------------------------------------------------------------------
 
@@ -344,6 +373,10 @@ async def run_pipeline(
     Kept for callers that want one blocking call with the complete result — the
     original documented contract. The HTTP path uses the two-phase split
     instead; see run_pipeline_phase_a() and run_phase_b().
+
+    Also generates a SOAP note for clinical handoff once the full data is
+    available (diseases + medicines). The two-phase HTTP path generates the
+    SOAP note via a separate enrichment mechanism.
     """
     result = await run_pipeline_phase_a(urdu_text, latitude, longitude, history)
 
@@ -356,6 +389,15 @@ async def run_pipeline(
     if result.get("needs_phase_b"):
         phase_b = await run_phase_b(result["top_disease"], latitude, longitude)
         result = {**result, **phase_b}
+
+        # Generate SOAP note concurrently is not possible here since Phase B
+        # already completed, but we can generate it now with full data.
+        soap_note = await _generate_soap_note_safe(
+            diseases=result.get("diseases", []),
+            medicines=result.get("medicines", []),
+            original_text=urdu_text,
+        )
+        result["soap_note_english"] = soap_note
     elif result.get("is_emergency"):
         # An emergency still deserves the nearest hospital, even though the
         # spoken reply does not wait for it. Medicines are deliberately NOT
@@ -365,3 +407,4 @@ async def run_pipeline(
         result = {**result, "hospitals": phase_b["hospitals"]}
 
     return {k: v for k, v in result.items() if k not in internal}
+
