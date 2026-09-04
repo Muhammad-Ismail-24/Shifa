@@ -4,7 +4,13 @@ from utils.logger import logger
 
 async def generate_with_retry(prompt: str, system_instruction: str = None) -> str:
     # Primary and fallback models
-    models = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.7-flash"]
+    models = [
+        "gemini-3.1-flash-lite",
+        "gemini-3.5-flash-lite",
+        "gemini-3.5-flash",
+        "gemini-3.7-flash",
+        "gemini-2.5-flash-lite",
+    ]
     max_retries = 3
 
     for model_name in models:
@@ -13,7 +19,12 @@ async def generate_with_retry(prompt: str, system_instruction: str = None) -> st
                 model = genai.GenerativeModel(model_name)
                 # Assuming older SDK signature for broader compatibility
                 full_prompt = f"{system_instruction}\n\n{prompt}" if system_instruction else prompt
-                response = await model.generate_content_async(full_prompt)
+                if hasattr(model, "generate_content_async"):
+                    res = model.generate_content_async(full_prompt)
+                    response = await res if asyncio.iscoroutine(res) else res
+                else:
+                    res = model.generate_content(full_prompt)
+                    response = await res if asyncio.iscoroutine(res) else res
                 return response.text
             except Exception as e:
                 error_msg = str(e).lower()

@@ -501,6 +501,9 @@ async def test_soap_agent_generation(monkeypatch):
         def generate_content(self, prompt):
             return FakeResponse()
 
+        async def generate_content_async(self, prompt):
+            return FakeResponse()
+
     monkeypatch.setattr(soap_agent.genai, "GenerativeModel", FakeModel)
 
     note = await soap_agent.generate_soap_note(

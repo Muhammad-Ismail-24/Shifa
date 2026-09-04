@@ -10,6 +10,7 @@ import google.generativeai as genai
 
 from config.settings import settings
 from utils.logger import logger
+from utils.ai_client import generate_with_retry
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
@@ -60,12 +61,10 @@ async def generate_soap_note(
             ),
         }
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(
-            f"{SOAP_PROMPT}\n\nTriage Session Data:\n{json.dumps(session_data, ensure_ascii=False, indent=2)}"
-        )
+        prompt_text = f"{SOAP_PROMPT}\n\nTriage Session Data:\n{json.dumps(session_data, ensure_ascii=False, indent=2)}"
+        response_text = await generate_with_retry(prompt=prompt_text)
 
-        soap_text = response.text.strip()
+        soap_text = response_text.strip()
 
         # Truncate to 500 chars if needed (QR code limit for reliable scanning)
         if len(soap_text) > 500:
