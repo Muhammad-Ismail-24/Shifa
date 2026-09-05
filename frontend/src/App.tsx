@@ -1,6 +1,10 @@
 // React Router — all route definitions.
 
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import type { User } from '@supabase/supabase-js';
+
+import { supabase } from './lib/supabaseClient';
 
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -12,12 +16,33 @@ import Terms from './pages/Terms';
 import PillScanner from './components/PillScanner';
 
 export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Restore the session on mount so a refresh does not flash the sign-in
+    // button while the cookie is still valid.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for sign-in, sign-out, and token-refresh events.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <Routes>
       {/* The whole application lives on "/": conversation and findings side by
           side. There is no separate results route — a spoken conversation must
           not be interrupted by a page change to read the answer. */}
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Home user={user} />} />
       <Route path="/scanner" element={<PillScanner />} />
 
       {/* The five informational pages. These are the destinations in the menu

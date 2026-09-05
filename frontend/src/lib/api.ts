@@ -5,6 +5,7 @@
 // request shape stays in one reviewable place.
 
 import axios from 'axios';
+import { supabase } from './supabaseClient';
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -22,6 +23,20 @@ const client = axios.create({
   baseURL,
   timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
+});
+
+// ---------------------------------------------------------------------------
+// Inject the Supabase JWT into every outgoing request.
+// If the user is not signed in (e.g. WhatsApp or an anonymous session), the
+// header is simply absent — the backend's get_current_user dependency handles
+// that gracefully with auto_error=False.
+// ---------------------------------------------------------------------------
+client.interceptors.request.use(async (config) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
+  }
+  return config;
 });
 
 export class ShifaApiError extends Error {

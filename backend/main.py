@@ -6,12 +6,13 @@ Registers /health and /analyze endpoints.
 import asyncio
 import os
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
 
 import session_store
+from utils.auth import get_current_user, get_supabase
 from utils.logger import logger
 from utils.validators import validate_analyze_request
 
@@ -258,6 +259,7 @@ async def analyze(body: AnalyzeRequest):
     session_id: str | None = None
     if result.pop("needs_phase_b", False):
         top_disease = result.pop("top_disease", "Unknown")
+        symptoms = result.pop("symptoms", [])
         task = asyncio.create_task(
             run_phase_b(
                 top_disease, body.latitude, body.longitude,
@@ -265,16 +267,23 @@ async def analyze(body: AnalyzeRequest):
                 original_text=body.urdu_text,
             )
         )
-        session_id = session_store.create_session(task)
+        session_id = session_store.create_session(
+            task,
+            phase_a_data={
+                "symptoms": ", ".join(symptoms) if symptoms else "",
+                "diagnosis": top_disease,
+            },
+        )
         logger.info("Phase B launched for session %s (%s).", session_id, top_disease)
     else:
         result.pop("top_disease", None)
+        result.pop("symptoms", None)
 
     return AnalyzeResponse(session_id=session_id, **result)
 
 
 @app.get("/results/{session_id}", response_model=ResultsResponse)
-async def results(session_id: str):
+async def results(session_id: str, user_id: str | None = Security(get_current_user)):
     """
     Phase B of the response — medicines and nearby hospitals.
 
@@ -285,10 +294,15 @@ async def results(session_id: str):
     already has a correct medical answer on screen; the enrichment is
     supplementary and its absence is information, not a fault. Only a genuinely
     unknown session id is a 404 — that one the client must stop waiting on.
+
+    When the user is authenticated, the completed consultation (symptoms,
+    diagnosis, and SOAP note) is persisted to the Supabase medical_history
+    table. The database write is wrapped in a try/except so a transient
+    Supabase failure never crashes the API response.
     """
     logger.info("GET /results/%s", session_id)
 
-    outcome, data = await session_store.await_results(session_id)
+    outcome, data, phase_a_data = await session_store.await_results(session_id)
 
     if outcome == "not_found":
         # 404 with a status body: the client reads the status to render
@@ -304,12 +318,36 @@ async def results(session_id: str):
             hospitals_status="failed",
         )
 
+    soap_note = data.get("soap_note_english")
+
+    # ---- Persist to medical_history when the user is authenticated ----
+    if user_id and soap_note:
+        try:
+            supabase_client = get_supabase()
+            if supabase_client is not None:
+                supabase_client.table("medical_history").insert({
+                    "user_id": user_id,
+                    "session_id": session_id,
+                    "symptoms": phase_a_data.get("symptoms", ""),
+                    "diagnosis": phase_a_data.get("diagnosis", ""),
+                    "soap_note": soap_note,
+                }).execute()
+                logger.info(
+                    "Medical history saved for user %s, session %s.",
+                    user_id, session_id,
+                )
+        except Exception as exc:
+            logger.error(
+                "Failed to save medical history for user %s, session %s: %s",
+                user_id, session_id, exc,
+            )
+
     return ResultsResponse(
         medicines=data.get("medicines", []),
         hospitals=data.get("hospitals", []),
         medicines_status=data.get("medicines_status", "ok"),
         hospitals_status=data.get("hospitals_status", "ok"),
-        soap_note_english=data.get("soap_note_english"),
+        soap_note_english=soap_note,
     )
 
 

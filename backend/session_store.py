@@ -115,13 +115,22 @@ def _prune() -> None:
             _drop(sid, reason="capacity")
 
 
-def create_session(task: asyncio.Task | None) -> str:
-    """Register a Phase B task and return the session id the client fetches with."""
+def create_session(task: asyncio.Task | None, *, phase_a_data: dict | None = None) -> str:
+    """Register a Phase B task and return the session id the client fetches with.
+
+    ``phase_a_data`` is an optional dict carrying the symptoms and diagnosis
+    from Phase A, stored so the /results endpoint can persist them to the
+    medical_history table when the user is authenticated.
+    """
     if task is not None:
         task.add_done_callback(_consume_exception)
 
     session_id = str(uuid.uuid4())
-    _sessions[session_id] = {"created_at": time.time(), "task": task}
+    _sessions[session_id] = {
+        "created_at": time.time(),
+        "task": task,
+        "phase_a_data": phase_a_data or {},
+    }
 
     # Prune AFTER inserting, not before. Pruning first leaves room for the new
     # entry to push the store one over the cap, so a steady stream of requests
@@ -140,29 +149,33 @@ def session_count() -> int:
     return len(_sessions)
 
 
-async def await_results(session_id: str) -> tuple[Outcome, dict | None]:
+async def await_results(session_id: str) -> tuple[Outcome, dict | None, dict]:
     """
     Await the background Phase B task for this session.
 
-    Returns (outcome, data). The caller decides what each outcome means over
-    HTTP; this never raises for a failed lookup, only for its own cancellation
-    (the client disconnected), which must propagate.
+    Returns (outcome, data, phase_a_data). The caller decides what each outcome
+    means over HTTP; this never raises for a failed lookup, only for its own
+    cancellation (the client disconnected), which must propagate.
 
     Retrieval is idempotent: awaiting a finished task returns the same result
     again, so a client that retries the GET gets the same answer rather than a
     404. The session is not consumed on read — it expires on the TTL.
+
+    ``phase_a_data`` is the dict that was passed to ``create_session`` —
+    symptoms and diagnosis from Phase A, for medical history persistence.
     """
     _prune()
 
     entry = _sessions.get(session_id)
     if entry is None:
-        return "not_found", None
+        return "not_found", None, {}
 
     task = entry["task"]
+    phase_a_data: dict = entry.get("phase_a_data", {})
     if task is None:
         # A session with no work attached. Not reachable via /analyze, but a
         # caller that registers one deserves a valid empty answer, not a crash.
-        return "ok", {"medicines": [], "hospitals": []}
+        return "ok", {"medicines": [], "hospitals": []}, phase_a_data
 
     # asyncio.wait, not `await task`. `await task` on a task that someone else
     # cancels (pruning, shutdown, capacity eviction) raises CancelledError
@@ -175,15 +188,15 @@ async def await_results(session_id: str) -> tuple[Outcome, dict | None]:
 
     if task.cancelled():
         logger.warning("Session %s: Phase B was cancelled before it finished.", session_id)
-        return "cancelled", None
+        return "cancelled", None, phase_a_data
 
     exc = task.exception()
     if exc is not None:
         # Already logged by _consume_exception; this is the request-side view.
         logger.error("Session %s: Phase B failed — %r", session_id, exc)
-        return "failed", None
+        return "failed", None, phase_a_data
 
-    return "ok", task.result()
+    return "ok", task.result(), phase_a_data
 
 
 def shutdown() -> None:

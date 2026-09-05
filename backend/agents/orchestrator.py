@@ -340,6 +340,9 @@ async def run_pipeline_phase_a(
         "disclaimer_urdu": DISCLAIMER_URDU,
         "needs_phase_b": bool(diseases),
         "top_disease": diseases[0]["disease"] if diseases else "Unknown",
+        # Carried through to the session store so /results can persist to
+        # medical_history when the user is authenticated.
+        "symptoms": symptoms,
     }
 
 

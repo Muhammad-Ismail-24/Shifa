@@ -107,6 +107,7 @@ def test_analyze_returns_session_id_and_empty_enrichment(client, monkeypatch):
     # No internal decision keys leak into the wire contract.
     assert "needs_phase_b" not in body
     assert "top_disease" not in body
+    assert "symptoms" not in body
 
 
 def test_triage_clarification_has_no_session_id(client, monkeypatch):

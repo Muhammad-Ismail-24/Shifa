@@ -20,3 +20,7 @@ pypdf==4.2.0
 
 # Database boilerplate (SQLite)
 sqlalchemy==2.0.31
+
+# Supabase — cloud database + auth
+supabase
+PyJWT>=2.8.0

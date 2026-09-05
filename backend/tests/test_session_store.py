@@ -36,13 +36,13 @@ async def _forever():
 
 async def test_completed_session_returns_ok_and_data():
     sid = session_store.create_session(asyncio.create_task(_value({"medicines": [1]})))
-    outcome, data = await session_store.await_results(sid)
+    outcome, data, _ = await session_store.await_results(sid)
     assert outcome == "ok"
     assert data == {"medicines": [1]}
 
 
 async def test_unknown_session_is_not_found():
-    outcome, data = await session_store.await_results("no-such-session")
+    outcome, data, _ = await session_store.await_results("no-such-session")
     assert outcome == "not_found"
     assert data is None
 
@@ -51,7 +51,7 @@ async def test_phase_b_still_running_is_awaited_not_rejected():
     """A GET that arrives before Phase B finishes must wait, not 404."""
     sid = session_store.create_session(asyncio.create_task(_value({"ok": True}, delay=0.05)))
     started = time.monotonic()
-    outcome, data = await session_store.await_results(sid)
+    outcome, data, _ = await session_store.await_results(sid)
     assert outcome == "ok"
     assert data == {"ok": True}
     assert time.monotonic() - started >= 0.04
@@ -63,7 +63,7 @@ async def test_failed_task_reports_failed_not_empty():
     successful empty result.
     """
     sid = session_store.create_session(asyncio.create_task(_boom()))
-    outcome, data = await session_store.await_results(sid)
+    outcome, data, _ = await session_store.await_results(sid)
     assert outcome == "failed"
     assert data is None
 
@@ -73,12 +73,12 @@ async def test_retrieval_is_idempotent():
     sid = session_store.create_session(asyncio.create_task(_value({"medicines": ["a"]})))
     first = await session_store.await_results(sid)
     second = await session_store.await_results(sid)
-    assert first == second == ("ok", {"medicines": ["a"]})
+    assert first == second == ("ok", {"medicines": ["a"]}, {})
 
 
 async def test_session_with_no_task_returns_empty_ok():
     sid = session_store.create_session(None)
-    outcome, data = await session_store.await_results(sid)
+    outcome, data, _ = await session_store.await_results(sid)
     assert outcome == "ok"
     assert data == {"medicines": [], "hospitals": []}
 
@@ -93,7 +93,7 @@ async def test_expired_session_is_pruned_and_not_found():
     # Backdate past the TTL rather than sleeping 15 minutes.
     session_store._sessions[sid]["created_at"] = time.time() - session_store.TTL_SECONDS - 1
 
-    outcome, _ = await session_store.await_results(sid)
+    outcome, _, _ = await session_store.await_results(sid)
     assert outcome == "not_found"
     assert session_store.session_count() == 0
 
@@ -124,7 +124,7 @@ async def test_cancelled_task_reports_cancelled_not_a_crash():
         task.cancel()
 
     asyncio.create_task(cancel_soon())
-    outcome, data = await session_store.await_results(sid)
+    outcome, data, _ = await session_store.await_results(sid)
 
     assert outcome == "cancelled"
     assert data is None
@@ -190,7 +190,7 @@ async def test_concurrent_sessions_do_not_cross_contaminate():
         *(session_store.await_results(sid) for sid in ids.values())
     )
 
-    for (outcome, data), i in zip(results, ids):
+    for (outcome, data, _), i in zip(results, ids):
         assert outcome == "ok"
         assert data == {"n": i}
 
@@ -198,7 +198,7 @@ async def test_concurrent_sessions_do_not_cross_contaminate():
 async def test_concurrent_readers_of_one_session_agree():
     sid = session_store.create_session(asyncio.create_task(_value({"medicines": ["x"]}, delay=0.02)))
     results = await asyncio.gather(*(session_store.await_results(sid) for _ in range(10)))
-    assert all(r == ("ok", {"medicines": ["x"]}) for r in results)
+    assert all(r == ("ok", {"medicines": ["x"]}, {}) for r in results)
 
 
 async def test_create_during_pending_read_does_not_disturb_it():
@@ -215,4 +215,4 @@ async def test_create_during_pending_read_does_not_disturb_it():
     for _ in range(5):
         session_store.create_session(asyncio.create_task(_value({"medicines": []})))
 
-    assert await reader == ("ok", {"medicines": ["slow"]})
+    assert await reader == ("ok", {"medicines": ["slow"]}, {})

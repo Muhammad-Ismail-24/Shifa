@@ -66,7 +66,7 @@ function renderHome() {
     // Same future flags main.tsx opts into, so the test renders under the
     // router semantics the app actually ships with (and without the warnings).
     <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Home />
+      <Home user={null} />
     </MemoryRouter>,
   );
 }
