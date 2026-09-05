@@ -342,19 +342,29 @@ async def whatsapp_webhook(request: Request, background_tasks: BackgroundTasks):
     Returns 200 immediately so GreenAPI does not retry.
     The actual AI processing + reply happens in a background task.
     """
-    from utils.whatsapp import parse_incoming_message, process_and_reply
+    from utils.whatsapp import (
+        parse_incoming_message,
+        process_and_reply,
+        process_audio_and_reply,
+        process_location_and_reply,
+    )
 
     payload = await request.json()
 
     parsed = parse_incoming_message(payload)
     if parsed is None:
-        # Not a text message we care about — acknowledge and ignore
+        # Not a message we care about — acknowledge and ignore
         return {"status": "ok"}
 
-    chat_id, text = parsed
-    logger.info("WhatsApp incoming from %s — queueing background task", chat_id)
+    chat_id, message_type, data = parsed
+    logger.info("WhatsApp incoming from %s (type: %s) — queueing background task", chat_id, message_type)
 
-    background_tasks.add_task(process_and_reply, chat_id, text)
+    if message_type == "text":
+        background_tasks.add_task(process_and_reply, chat_id, data["text"])
+    elif message_type == "audio":
+        background_tasks.add_task(process_audio_and_reply, chat_id, data["download_url"])
+    elif message_type == "location":
+        background_tasks.add_task(process_location_and_reply, chat_id, data["latitude"], data["longitude"])
 
     return {"status": "ok"}
 

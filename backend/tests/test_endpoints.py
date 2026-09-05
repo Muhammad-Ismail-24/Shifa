@@ -428,6 +428,7 @@ def test_whatsapp_webhook_valid_message(client, monkeypatch):
         "typeWebhook": "incomingMessageReceived",
         "senderData": {"chatId": "923001234567@c.us"},
         "messageData": {
+            "typeMessage": "textMessage",
             "textMessageData": {"textMessage": "مجھے بخار ہے"}
         },
     }
@@ -467,15 +468,21 @@ def test_whatsapp_parse_incoming_message():
     payload = {
         "typeWebhook": "incomingMessageReceived",
         "senderData": {"chatId": "123@c.us"},
-        "messageData": {"textMessageData": {"textMessage": "hello"}},
+        "messageData": {
+            "typeMessage": "textMessage",
+            "textMessageData": {"textMessage": "hello"}
+        },
     }
-    assert parse_incoming_message(payload) == ("123@c.us", "hello")
+    assert parse_incoming_message(payload) == ("123@c.us", "text", {"text": "hello"})
 
     # Missing text
     empty_text = {
         "typeWebhook": "incomingMessageReceived",
         "senderData": {"chatId": "123@c.us"},
-        "messageData": {"textMessageData": {"textMessage": "  "}},
+        "messageData": {
+            "typeMessage": "textMessage",
+            "textMessageData": {"textMessage": "  "}
+        },
     }
     assert parse_incoming_message(empty_text) is None
 
@@ -483,7 +490,10 @@ def test_whatsapp_parse_incoming_message():
     no_chat = {
         "typeWebhook": "incomingMessageReceived",
         "senderData": {},
-        "messageData": {"textMessageData": {"textMessage": "hello"}},
+        "messageData": {
+            "typeMessage": "textMessage",
+            "textMessageData": {"textMessage": "hello"}
+        },
     }
     assert parse_incoming_message(no_chat) is None
 
