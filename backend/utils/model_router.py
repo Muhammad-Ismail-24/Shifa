@@ -1,5 +1,6 @@
 import re
 import asyncio
+from enum import Enum
 from google import genai
 from google.genai import types
 from config.settings import settings
@@ -17,6 +18,47 @@ FALLBACK_MODELS = [
     "gemini-3.7-flash",        # 20 RPD, 5 RPM
     "gemini-2.5-flash-lite",   # 20 RPD, 10 RPM
 ]
+
+
+# ---------------------------------------------------------------------------
+# Phase-based routing
+# ---------------------------------------------------------------------------
+class Phase(str, Enum):
+    """
+    Pipeline phases. Callers tag their generate request with a phase so the
+    ModelRouter selects phase-appropriate models in one place instead of each
+    agent hardcoding its own chain.
+    """
+    TRIAGE = "triage"
+    SYMPTOM_EXTRACTION = "symptom_extraction"
+    DISEASE_IDENTIFICATION = "disease_identification"
+    RESPONSE_COMPOSITION = "response_composition"
+    SOAP_GENERATION = "soap_generation"
+    MEDICINE_SCAN = "medicine_scan"
+    TRANSCRIPTION = "transcription"
+
+
+class ModelRouter:
+    """
+    Centralized model selection per pipeline phase.
+
+    Every phase currently resolves to the shared FALLBACK_MODELS chain
+    (all flash models in the chain accept text, audio, and image inputs),
+    but the mapping lives here so quota or modality tuning happens once,
+    not per agent.
+    """
+
+    _PHASE_MODELS: dict[Phase, list[str]] = {
+        Phase.TRANSCRIPTION: list(FALLBACK_MODELS),
+    }
+
+    @classmethod
+    def route(cls, phase: Phase | None = None) -> list[str]:
+        """Return the ordered fallback model list for a phase."""
+        if phase is None:
+            return list(FALLBACK_MODELS)
+        return list(cls._PHASE_MODELS.get(phase, FALLBACK_MODELS))
+
 
 def sanitize_json(raw: str) -> str:
     text = raw.strip()

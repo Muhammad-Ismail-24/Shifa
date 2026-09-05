@@ -1,16 +1,28 @@
 import asyncio
 import google.generativeai as genai
 from utils.logger import logger
+from utils.model_router import ModelRouter, Phase
 
-async def generate_with_retry(prompt: str, system_instruction: str = None) -> str:
-    # Primary and fallback models
-    models = [
-        "gemini-3.1-flash-lite",
-        "gemini-3.5-flash-lite",
-        "gemini-3.5-flash",
-        "gemini-3.7-flash",
-        "gemini-2.5-flash-lite",
-    ]
+async def generate_with_retry(
+    prompt: str,
+    system_instruction: str = None,
+    media_data: list | None = None,
+    phase: Phase | None = None,
+    timeout: float = 30.0,
+) -> str:
+    """
+    Centralized Gemini call with model fallback and retry.
+
+    New optional parameters (all backward compatible):
+      - media_data: list of {"mime_type": str, "data": bytes} parts appended
+        after the prompt, for multimodal requests (audio/images).
+      - phase: routes model selection through ModelRouter instead of the
+        default chain.
+      - timeout: per-attempt deadline in seconds. Guards against a hung API
+        call blocking the event loop indefinitely.
+    """
+    # Primary and fallback models, selected centrally by phase.
+    models = ModelRouter.route(phase)
     max_retries = 3
 
     for model_name in models:
@@ -19,13 +31,24 @@ async def generate_with_retry(prompt: str, system_instruction: str = None) -> st
                 model = genai.GenerativeModel(model_name)
                 # Assuming older SDK signature for broader compatibility
                 full_prompt = f"{system_instruction}\n\n{prompt}" if system_instruction else prompt
+                contents = [full_prompt, *media_data] if media_data else full_prompt
                 if hasattr(model, "generate_content_async"):
-                    res = model.generate_content_async(full_prompt)
-                    response = await res if asyncio.iscoroutine(res) else res
+                    res = model.generate_content_async(contents)
+                    if asyncio.iscoroutine(res):
+                        response = await asyncio.wait_for(res, timeout=timeout)
+                    else:
+                        response = res
                 else:
-                    res = model.generate_content(full_prompt)
-                    response = await res if asyncio.iscoroutine(res) else res
+                    # Legacy sync path — offload to a worker thread so the
+                    # event loop is never blocked.
+                    response = await asyncio.wait_for(
+                        asyncio.to_thread(model.generate_content, contents),
+                        timeout=timeout,
+                    )
                 return response.text
+            except asyncio.TimeoutError:
+                logger.warning(f"Timeout ({timeout}s) for {model_name}. Retrying... (Attempt {attempt+1}/{max_retries})")
+                continue
             except Exception as e:
                 error_msg = str(e).lower()
                 if "503" in error_msg or "429" in error_msg or "unavailable" in error_msg:

@@ -3,20 +3,20 @@ WhatsApp integration via GreenAPI.
 
 Handles:
   - Text messages (textMessage / extendedTextMessage)
-  - Voice notes (audioMessage) — transcribed via Gemini 1.5 Flash
+  - Voice notes (audioMessage) — transcribed via the centralized model router
   - Location sharing (locationMessage) — nearest hospital lookup
   - Sending text replies back via GreenAPI sendMessage
   - Background tasks for AI pipeline processing
 """
 
+import asyncio
 import httpx
 import json
-import google.generativeai as genai
 
 from config.settings import settings
 from utils.logger import logger
-
-genai.configure(api_key=settings.GEMINI_API_KEY)
+from utils.ai_client import generate_with_retry
+from utils.model_router import ModelRouter, Phase
 
 GREENAPI_SEND_URL = (
     "https://api.green-api.com/waInstance{id}/sendMessage/{token}"
@@ -119,15 +119,29 @@ async def send_whatsapp_reply(chat_id: str, message: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Voice note → text transcription via Gemini
+# Voice note → text transcription via the centralized model router
 # ---------------------------------------------------------------------------
+
+# Strict dictation prompt: original language (Urdu or English), no filler.
+VOICE_TRANSCRIPTION_PROMPT = (
+    "You are a medical transcription assistant in Pakistan. "
+    "Transcribe the attached audio exactly as spoken, in the original language "
+    "(Urdu or English). Output ONLY the transcription — no greetings, no "
+    "commentary, no conversational filler."
+)
+
+# Strict deadline for the transcription request. The webhook worker must
+# never hang on a slow model call and block the event loop.
+VOICE_TRANSCRIPTION_TIMEOUT_SECONDS = 15.0
+
 
 async def transcribe_voice_note(download_url: str) -> str:
     """
-    Download a WhatsApp voice note (.ogg) and use Gemini 1.5 Flash
-    to transcribe / analyze the patient's spoken Urdu symptoms.
+    Download a WhatsApp voice note (.ogg) and transcribe it through the
+    centralized model router (Phase.TRANSCRIPTION).
 
-    Returns the transcribed text, or an error message.
+    Returns the transcribed text, or "" if the download or transcription
+    fails or times out.
     """
     try:
         # Step 1: Download the audio file
@@ -138,25 +152,31 @@ async def transcribe_voice_note(download_url: str) -> str:
 
         logger.info("Voice note downloaded — %d bytes", len(audio_bytes))
 
-        # Step 2: Send to Gemini for transcription / symptom extraction
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        # Step 2: Transcribe via the centralized router — audio-capable
+        # flash models, fallback chain, per-attempt timeout.
+        models = ModelRouter.route(Phase.TRANSCRIPTION)
+        logger.info("Transcribing voice note via routed models: %s", ", ".join(models))
 
-        prompt = (
-            "You are a medical assistant in Pakistan. "
-            "The following audio is a patient speaking in Urdu about their symptoms. "
-            "Transcribe what the patient said into Urdu text. "
-            "If the audio is unclear, do your best to capture the key symptoms mentioned. "
-            "Respond ONLY with the Urdu transcription — nothing else."
+        transcribed = await asyncio.wait_for(
+            generate_with_retry(
+                prompt=VOICE_TRANSCRIPTION_PROMPT,
+                media_data=[{"mime_type": "audio/ogg", "data": audio_bytes}],
+                phase=Phase.TRANSCRIPTION,
+                timeout=VOICE_TRANSCRIPTION_TIMEOUT_SECONDS,
+            ),
+            timeout=VOICE_TRANSCRIPTION_TIMEOUT_SECONDS,
         )
 
-        response = model.generate_content([
-            prompt,
-            {"mime_type": "audio/ogg", "data": audio_bytes},
-        ])
+        text = transcribed.strip()
+        logger.info("Voice note transcribed — len=%d", len(text))
+        return text
 
-        transcribed = response.text.strip()
-        logger.info("Voice note transcribed — len=%d", len(transcribed))
-        return transcribed
+    except asyncio.TimeoutError:
+        logger.error(
+            "Voice note transcription timed out after %.0fs.",
+            VOICE_TRANSCRIPTION_TIMEOUT_SECONDS,
+        )
+        return ""
 
     except Exception as exc:
         logger.error("Voice note transcription failed: %s", exc)
@@ -215,7 +235,7 @@ async def process_and_reply(chat_id: str, text: str) -> None:
 
 async def process_audio_and_reply(chat_id: str, download_url: str) -> None:
     """
-    Background task: download voice note, transcribe via Gemini,
+    Background task: download voice note, transcribe via the model router,
     run through triage pipeline, reply via WhatsApp.
     """
     logger.info("WhatsApp audio pipeline start — chat_id=%s", chat_id)
@@ -231,7 +251,8 @@ async def process_audio_and_reply(chat_id: str, download_url: str) -> None:
     if not transcribed:
         await send_whatsapp_reply(
             chat_id,
-            "معذرت، آواز واضح نہیں تھی۔ براہ کرم دوبارہ بولیں یا اردو میں لکھ کر بھیجیں۔"
+            "معذرت، میں آپ کی وائس نوٹ پر کارروائی نہیں کر سکا۔ "
+            "براہ کرم اپنی علامات ٹائپ کر کے بھیجیں۔"
         )
         return
 
