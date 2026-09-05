@@ -37,8 +37,10 @@ export default function ClinicalHandoff({ soapNote }: Props) {
           <QRCodeSVG
             value={soapNote}
             size={180}
-            level="M"
-            includeMargin={false}
+            level="L"
+            includeMargin={true}
+            bgColor="#ffffff"
+            fgColor="#000000"
           />
         </div>
       </div>
