@@ -28,7 +28,7 @@ O (Objective):
 [Extracted clinical observations or vital indicators. If none available, write "No objective vitals recorded — AI triage only."]
 
 A (Assessment):
-[Top probable conditions with confidence levels]
+[Top probable conditions with confidence levels — always lead with the most common, benign condition; list severe scenarios only as differentials to monitor]
 
 P (Plan):
 [Recommended OTC relief, emergency indicators, and suggested medical specialty to consult]

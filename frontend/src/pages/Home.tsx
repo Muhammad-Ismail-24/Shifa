@@ -385,17 +385,26 @@ export default function Home({ user }: { user: User | null }) {
         {/*
           Mobile is one scrolling column (chat, then results) with the input bar
           stuck to the bottom. From md up the two panels each own their scroll
-          and the shell clips — parent clips, child scrolls, never both.
+          and the shell clips — parent clips, child scrolls, never both. The
+          single grid row is bounded to the shell height (minmax(0, 1fr)) so
+          each panel's h-full + overflow-y-auto actually engages: without the
+          row constraint the row grows with the tallest panel's content and
+          long SOAP notes / hospital lists would clip at the shell instead of
+          scrolling.
         */}
-        <main className="flex-1 min-h-0 overflow-y-auto md:overflow-hidden md:grid md:grid-cols-2 md:gap-6 px-5 md:px-8 md:pb-8">
+        <main className="flex-1 min-h-0 overflow-y-auto md:overflow-hidden md:grid md:grid-cols-2 md:grid-rows-[minmax(0,1fr)] md:gap-6 px-5 md:px-8 md:pb-8">
           {/* ---------------- Chat panel ---------------- */}
           {/* min-h-full on mobile is what pins the input bar to the bottom of the
               viewport on an empty conversation: the panel fills the scroller, the
               message list takes the slack, the bar sits under it. */}
           <section className="flex min-h-full flex-col md:h-full md:min-h-0" aria-label="Conversation">
+            {/* History reads top-down: newest turns land at the bottom of a
+                top-aligned list, and the list scrolls on its own once it
+                outgrows the panel. justify-start (never justify-end/
+                justify-center) keeps the items pinned to the top. */}
             <div
               ref={listRef}
-              className="flex flex-1 flex-col justify-end gap-3 md:min-h-0 md:overflow-y-auto md:pr-1"
+              className="flex flex-1 flex-col justify-start gap-3 md:min-h-0 md:overflow-y-auto md:pr-1"
             >
               {!started && (
                 <div className="py-8">
@@ -428,6 +437,9 @@ export default function Home({ user }: { user: User | null }) {
           </section>
 
           {/* ---------------- Results panel ---------------- */}
+          {/* h-full + min-h-0 + overflow-y-auto: long SOAP notes and hospital
+              lists scroll inside this panel instead of pushing or breaking
+              the page layout. */}
           {results && (
             <section
               className="mt-6 space-y-4 md:mt-0 md:h-full md:min-h-0 md:overflow-y-auto md:pr-1"

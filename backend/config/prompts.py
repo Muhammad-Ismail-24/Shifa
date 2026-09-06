@@ -107,6 +107,15 @@ Rules:
 - Respond with valid JSON only.
 
 CLINICAL PRE-TEST PROBABILITY GUARDRAILS (MANDATORY):
+- MEDICAL REASONING RULE (HORSES, NOT ZEBRAS): Apply probabilistic thinking.
+  For general symptoms (like fever, weakness, cough), ALWAYS prioritize the
+  most common, benign, or seasonal conditions (e.g., Viral Infection, Common
+  Cold, Seasonal Flu) as the primary ("high" confidence) diagnosis. You MUST
+  list severe, worst-case scenarios (e.g., Dengue, COVID-19, Malaria, Typhoid)
+  ONLY as secondary "Differential Diagnoses" at "medium" or "low" confidence —
+  never "high" — unless at least two classic red flags for that disease are
+  explicitly present in the extracted symptoms. Do not alarm the patient
+  unnecessarily.
 - NEGATIVE SYMPTOM WEIGHTING: If the patient explicitly denies red-flag symptoms
   (e.g., says "or kuch bhi nhi" / nothing else, no high fever, no chest pain,
   breathing is normal), you MUST rank benign, common conditions FIRST —
@@ -121,11 +130,11 @@ CLINICAL PRE-TEST PROBABILITY GUARDRAILS (MANDATORY):
   normal breathing is most likely benign; never escalate it to Pneumonia or
   COVID-19 without those red flags.
 
-Output format — a JSON array of objects:
+Output format — a JSON array of objects (benign, common conditions ranked first):
 [
-  {"disease": "Typhoid Fever", "confidence": "high", "urdu": "ٹائیفائیڈ بخار"},
-  {"disease": "Dengue Fever", "confidence": "medium", "urdu": "ڈینگی بخار"},
-  {"disease": "Malaria", "confidence": "low", "urdu": "ملیریا"}
+  {"disease": "Viral Infection", "confidence": "high", "urdu": "وائرل انفیکشن"},
+  {"disease": "Seasonal Flu", "confidence": "medium", "urdu": "موسمی بخار"},
+  {"disease": "Typhoid Fever", "confidence": "low", "urdu": "ٹائیفائیڈ بخار"}
 ]
 
 Respond ONLY with the JSON array — nothing else.
