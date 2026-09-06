@@ -8,18 +8,19 @@ async def generate_with_retry(
     system_instruction: str = None,
     media_data: list | None = None,
     phase: Phase | None = None,
-    timeout: float = 30.0,
 ) -> str:
     """
     Centralized Gemini call with model fallback and retry.
 
-    New optional parameters (all backward compatible):
+    No hardcoded timeout — the underlying SDK's default connection lifespan
+    governs, allowing free-tier deployments as much time as the platform
+    (Render / Fly.io / etc.) permits.
+
+    Optional parameters:
       - media_data: list of {"mime_type": str, "data": bytes} parts appended
         after the prompt, for multimodal requests (audio/images).
       - phase: routes model selection through ModelRouter instead of the
         default chain.
-      - timeout: per-attempt deadline in seconds. Guards against a hung API
-        call blocking the event loop indefinitely.
     """
     # Primary and fallback models, selected centrally by phase.
     models = ModelRouter.route(phase)
@@ -35,20 +36,14 @@ async def generate_with_retry(
                 if hasattr(model, "generate_content_async"):
                     res = model.generate_content_async(contents)
                     if asyncio.iscoroutine(res):
-                        response = await asyncio.wait_for(res, timeout=timeout)
+                        response = await res
                     else:
                         response = res
                 else:
                     # Legacy sync path — offload to a worker thread so the
                     # event loop is never blocked.
-                    response = await asyncio.wait_for(
-                        asyncio.to_thread(model.generate_content, contents),
-                        timeout=timeout,
-                    )
+                    response = await asyncio.to_thread(model.generate_content, contents)
                 return response.text
-            except asyncio.TimeoutError:
-                logger.warning(f"Timeout ({timeout}s) for {model_name}. Retrying... (Attempt {attempt+1}/{max_retries})")
-                continue
             except Exception as e:
                 error_msg = str(e).lower()
                 if "503" in error_msg or "429" in error_msg or "unavailable" in error_msg:

@@ -51,6 +51,9 @@ class ModelRouter:
 
     _PHASE_MODELS: dict[Phase, list[str]] = {
         Phase.TRANSCRIPTION: list(FALLBACK_MODELS),
+        # VOICE_SUMMARY is a non-clinical, latency-sensitive generation —
+        # route to gemini-3.5-flash-lite first for the lowest possible TTS lead-in.
+        Phase.VOICE_SUMMARY: ["gemini-3.5-flash-lite", *FALLBACK_MODELS],
     }
 
     @classmethod
@@ -78,20 +81,15 @@ async def generate_content_with_fallback_async(prompt: str, response_mime_type: 
 
     for model_name in FALLBACK_MODELS:
         try:
-            # Add a 5.0-second timeout for the API call to prevent hanging
-            response = await asyncio.wait_for(
-                client.aio.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=config
-                ),
-                timeout=5.0
+            # No hardcoded timeout — the SDK's default connection lifespan
+            # governs, allowing free-tier deployments as much time as the
+            # platform permits.
+            response = await client.aio.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=config
             )
             return response.text
-        except asyncio.TimeoutError as e:
-            logger.warning(f"Timeout for model {model_name}, trying next model in fallback sequence...")
-            last_error = e
-            continue
         except Exception as e:
             if "429" in str(e):
                 logger.warning(f"Rate limit hit for model {model_name}, trying next model in fallback sequence...")

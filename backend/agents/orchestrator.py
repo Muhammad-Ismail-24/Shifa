@@ -134,17 +134,16 @@ async def run_phase_b(
     original_text: str = "",
 ) -> dict:
     """
-    Fetch medicines, nearby hospitals, and generate SOAP note concurrently.
+    Fetch medicines, nearby hospitals, SOAP note, and voice summary
+    concurrently.
 
     Split out of the main pipeline so the patient hears Shifa's answer as soon
     as the diagnosis is ready instead of waiting on a Places round-trip.
 
-    FAILURE ISOLATION IS THE POINT OF THIS FUNCTION. The two lookups are
-    independent, and one failing must never cost the patient the other. Each
-    runs inside its own try/except, `gather(return_exceptions=True)` catches
-    anything that still escapes (a BaseException-adjacent error, an import
-    failure), and the outcome of each is reported separately rather than
-    flattened into an empty list.
+    All four tasks — medicines, hospitals, SOAP note, and voice summary — are
+    fired in a single asyncio.gather() after the diagnosis is available.
+    FAILURE ISOLATION: each task runs inside its own try/except, and
+    return_exceptions=True ensures one failing never cancels the others.
 
     That distinction matters clinically: an empty medicine list means "nothing
     to suggest for this condition", while a failed lookup means "we do not
@@ -167,7 +166,7 @@ async def run_phase_b(
         from tools.medicine_lookup import medicine_lookup
 
         # medicine_lookup is synchronous; off-thread so it cannot block the
-        # event loop while places_search is in flight.
+        # event loop while other tasks are in flight.
         return await asyncio.to_thread(medicine_lookup, top_disease)
 
     async def _hospitals() -> list:
@@ -175,11 +174,29 @@ async def run_phase_b(
 
         return await places_search(latitude, longitude)
 
-    # return_exceptions=True: without it, the first lookup to raise cancels the
-    # gather and the other lookup's result is thrown away even though it
-    # succeeded. That is exactly the failure this function must not have.
-    medicines_raw, hospitals_raw = await asyncio.gather(
-        _medicines(), _hospitals(), return_exceptions=True
+    async def _soap_task():
+        """Generate SOAP note if diseases are available; None otherwise."""
+        if not diseases:
+            return None
+        return await _generate_soap_note_safe(
+            diseases=diseases,
+            medicines=[],
+            symptoms=symptoms,
+            original_text=original_text,
+        )
+
+    async def _voice_task():
+        """Generate the short spoken summary."""
+        return await _generate_voice_summary_safe(
+            diagnosis=top_disease,
+            original_text=original_text,
+        )
+
+    # Fire all four tasks concurrently — the diagnosis (top_disease) is the
+    # only shared dependency and is already available from Phase A.
+    medicines_raw, hospitals_raw, soap_note, voice_summary = await asyncio.gather(
+        _medicines(), _hospitals(), _soap_task(), _voice_task(),
+        return_exceptions=True,
     )
 
     # ---- medicines ----
@@ -230,21 +247,26 @@ async def run_phase_b(
         medicines_status, len(medicines), hospitals_status, len(hospitals),
     )
 
-    # ---- SOAP note (optional, fire-and-forget) ----
-    soap_note: str | None = None
-    if diseases:
-        soap_note = await _generate_soap_note_safe(
-            diseases=diseases,
-            medicines=medicines,
-            symptoms=symptoms,
-            original_text=original_text,
+    # ---- SOAP note (ran concurrently above; unwrap BaseException) ----
+    if isinstance(soap_note, BaseException):
+        logger.error(
+            "Phase B: SOAP note generation failed — %r",
+            soap_note, exc_info=soap_note,
         )
+        soap_note = None
 
-    # ---- Voice summary (spoken in Phase B, never the clinical payload) ----
-    voice_summary = await _generate_voice_summary_safe(
-        diagnosis=top_disease,
-        original_text=original_text,
-    )
+    # ---- Voice summary (ran concurrently above; unwrap BaseException) ----
+    if isinstance(voice_summary, BaseException):
+        logger.error(
+            "Phase B: voice summary generation failed — %r",
+            voice_summary, exc_info=voice_summary,
+        )
+        language = "Roman Urdu" if _URDU_SCRIPT_RE.search(original_text) else "English"
+        voice_summary = (
+            VOICE_SUMMARY_FALLBACK_URDU
+            if language == "Roman Urdu"
+            else VOICE_SUMMARY_FALLBACK_EN
+        )
 
     return {
         "medicines": medicines,
@@ -437,7 +459,6 @@ async def _generate_voice_summary_safe(
         summary = await generate_with_retry(
             prompt=prompt,
             phase=Phase.VOICE_SUMMARY,
-            timeout=10.0,
         )
         summary = (summary or "").strip()
         if summary:
