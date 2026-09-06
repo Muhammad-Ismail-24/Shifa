@@ -10,7 +10,9 @@ from agents.triage_agent import evaluate_triage
 from agents.symptom_extractor import extract_symptoms
 from agents.disease_identifier import identify_diseases
 from agents.response_composer import compose_response
+from utils.ai_client import generate_with_retry
 from utils.logger import logger
+from utils.model_router import Phase
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -25,6 +27,39 @@ CLARIFICATION_DISCLAIMER = (
 )
 
 EMERGENCY_RESPONSE_URDU = "فوری طور پر ہسپتال جائیں"
+
+
+# ---------------------------------------------------------------------------
+# Voice summary — what Phase B says out loud
+#
+# Dictated when the final results land (web dashboard + WhatsApp). Deliberately
+# short: the long clinical detail (medicines, hospitals, SOAP) is for reading,
+# never for dictation.
+# ---------------------------------------------------------------------------
+
+VOICE_SUMMARY_PROMPT = (
+    "Based on this diagnosis: {diagnosis}, write a very brief, empathetic "
+    "2-sentence summary in {language}. Say something like: "
+    "'Please don't worry, based on your symptoms it looks like [Condition]. "
+    "I have listed the medicines and nearby hospitals for you below.' "
+    "Do not include markdown. Output ONLY the two sentences."
+)
+
+# Spoken when the LLM call fails or times out. A canned fallback is safer
+# than dictating the full clinical payload.
+VOICE_SUMMARY_FALLBACK_URDU = (
+    "Ghabraen nahin. Aap ki alamaton ke mutabiq shifa ne ilaaj tayyar kar "
+    "liya hai — neeche dawaein aur qareebi aspatal diye gaye hain."
+)
+
+VOICE_SUMMARY_FALLBACK_EN = (
+    "Please don't worry. Based on your symptoms, I have prepared the "
+    "medicines and nearby hospitals for you below."
+)
+
+# Arabic-script ranges — a rough but reliable "did the patient write Urdu"
+# check. Roman-Urdu and English inputs both contain no such characters.
+_URDU_SCRIPT_RE = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]")
 
 
 # ---------------------------------------------------------------------------
@@ -123,6 +158,8 @@ async def run_phase_b(
             "disclaimer_urdu":  str,
             "medicines_status": "ok" | "failed",
             "hospitals_status": "ok" | "failed",
+            "soap_note_english": str | None,
+            "voice_summary":    str,   # short spoken summary, never None
         }
     """
 
@@ -203,6 +240,12 @@ async def run_phase_b(
             original_text=original_text,
         )
 
+    # ---- Voice summary (spoken in Phase B, never the clinical payload) ----
+    voice_summary = await _generate_voice_summary_safe(
+        diagnosis=top_disease,
+        original_text=original_text,
+    )
+
     return {
         "medicines": medicines,
         "hospitals": hospitals,
@@ -210,6 +253,7 @@ async def run_phase_b(
         "medicines_status": medicines_status,
         "hospitals_status": hospitals_status,
         "soap_note_english": soap_note,
+        "voice_summary": voice_summary,
     }
 
 
@@ -375,6 +419,39 @@ async def _generate_soap_note_safe(
         return None
 
 
+async def _generate_voice_summary_safe(
+    diagnosis: str,
+    original_text: str = "",
+) -> str:
+    """
+    Generate the short empathetic summary that Phase B dictates.
+
+    Never raises and never returns None: the pipeline result must always
+    carry something safe to say out loud, because dictating the full clinical
+    payload to a patient is exactly what this feature exists to prevent.
+    """
+    language = "Roman Urdu" if _URDU_SCRIPT_RE.search(original_text) else "English"
+    prompt = VOICE_SUMMARY_PROMPT.format(diagnosis=diagnosis, language=language)
+
+    try:
+        summary = await generate_with_retry(
+            prompt=prompt,
+            phase=Phase.VOICE_SUMMARY,
+            timeout=10.0,
+        )
+        summary = (summary or "").strip()
+        if summary:
+            return summary
+    except Exception as exc:
+        logger.error("Voice summary generation failed (%s) — using fallback.", exc)
+
+    return (
+        VOICE_SUMMARY_FALLBACK_URDU
+        if language == "Roman Urdu"
+        else VOICE_SUMMARY_FALLBACK_EN
+    )
+
+
 # ---------------------------------------------------------------------------
 # Single-shot pipeline — Phase A + Phase B awaited together
 # ---------------------------------------------------------------------------
@@ -405,17 +482,17 @@ async def run_pipeline(
     internal = {"needs_phase_b", "top_disease", "medicines_status", "hospitals_status"}
 
     if result.get("needs_phase_b"):
-        phase_b = await run_phase_b(result["top_disease"], latitude, longitude)
-        result = {**result, **phase_b}
-
-        # Generate SOAP note concurrently is not possible here since Phase B
-        # already completed, but we can generate it now with full data.
-        soap_note = await _generate_soap_note_safe(
+        # diseases + original_text go in so run_phase_b can generate both the
+        # SOAP note and the spoken voice_summary itself — one LLM call each,
+        # no duplicated work in this wrapper.
+        phase_b = await run_phase_b(
+            result["top_disease"],
+            latitude,
+            longitude,
             diseases=result.get("diseases", []),
-            medicines=result.get("medicines", []),
             original_text=urdu_text,
         )
-        result["soap_note_english"] = soap_note
+        result = {**result, **phase_b}
     elif result.get("is_emergency"):
         # An emergency still deserves the nearest hospital, even though the
         # spoken reply does not wait for it. Medicines are deliberately NOT

@@ -16,6 +16,7 @@ import { UrduSpeechRecognizer, isSpeechRecognitionSupported } from './speechReco
 import { VoiceActivityDetector } from './voiceActivity';
 import { subscribeFrame } from './rafHub';
 import { VoiceState, canTransition, waveSourceFor, type VoiceStateValue, type WaveSource } from './voiceState';
+import { serverTtsResolver } from '../lib/speech';
 import { type AnalyzeResponse, type ConversationMessage } from '../lib/types';
 
 export interface VoiceSession {
@@ -77,7 +78,12 @@ export function useVoiceSession(): VoiceSession {
   const submittingRef = useRef(false);
 
   if (!engineRef.current) engineRef.current = new AudioEngine();
-  if (!speechRef.current) speechRef.current = new ShifaSpeech(engineRef.current);
+  if (!speechRef.current) {
+    speechRef.current = new ShifaSpeech(engineRef.current);
+    // Server TTS (ElevenLabs via GET /synthesize) first; ShifaSpeech falls
+    // back to browser speech synthesis when the resolver returns null.
+    speechRef.current.audioUrlResolver = serverTtsResolver;
+  }
   if (!clientRef.current) clientRef.current = new ShifaVoiceClient();
   if (!recognizerRef.current) recognizerRef.current = new UrduSpeechRecognizer('ur-PK');
   if (!vadRef.current) vadRef.current = new VoiceActivityDetector();

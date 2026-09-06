@@ -6,8 +6,9 @@ Registers /health and /analyze endpoints.
 import asyncio
 import os
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Request, Security
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 
@@ -131,6 +132,9 @@ class ResultsResponse(BaseModel):
     medicines_status: str = "ok"
     hospitals_status: str = "ok"
     soap_note_english: Optional[str] = None
+    # Short empathetic spoken summary — dictated via /synthesize in Phase B,
+    # never the full clinical payload.
+    voice_summary: Optional[str] = None
 
 
 class ScanMedicineRequest(BaseModel):
@@ -196,6 +200,30 @@ async def shutdown_sessions():
 async def health():
     """Simple liveness probe."""
     return {"status": "ok"}
+
+
+@app.get("/synthesize")
+async def synthesize(text: str = Query(..., min_length=1, max_length=2000)):
+    """
+    Server-side TTS (ElevenLabs) — spoken `text` returned as mp3 bytes.
+
+    The web UI's audioUrlResolver points an <audio> element at this endpoint,
+    so it cannot require a bearer token. A 503 tells the client to fall back
+    to browser speech synthesis instead of playing silence.
+    """
+    from utils.tts import generate_speech, tts_configured
+
+    if not tts_configured():
+        logger.warning("GET /synthesize — ELEVENLABS_API_KEY missing; returning 503.")
+        raise HTTPException(status_code=503, detail="TTS not configured")
+
+    try:
+        audio = await generate_speech(text)
+    except Exception as exc:
+        logger.error("TTS synthesis failed: %s", exc)
+        raise HTTPException(status_code=503, detail="TTS synthesis failed")
+
+    return StreamingResponse(iter([audio]), media_type="audio/mpeg")
 
 
 @app.post("/analyze", response_model=AnalyzeResponse)
@@ -348,6 +376,7 @@ async def results(session_id: str, user_id: str | None = Security(get_current_us
         medicines_status=data.get("medicines_status", "ok"),
         hospitals_status=data.get("hospitals_status", "ok"),
         soap_note_english=soap_note,
+        voice_summary=data.get("voice_summary"),
     )
 
 

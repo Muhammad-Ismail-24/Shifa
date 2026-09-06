@@ -19,6 +19,17 @@ const baseURL = import.meta.env.VITE_API_URL ?? '';
 
 export const isBackendConfigured = Boolean(baseURL);
 
+/**
+ * URL of the backend TTS endpoint (GET /synthesize) for `text`.
+ *
+ * Returns null when no backend is configured, so ShifaSpeech's
+ * audioUrlResolver can fall back to browser speech synthesis.
+ */
+export function synthesizeUrl(text: string): string | null {
+  if (!isBackendConfigured) return null;
+  return `${baseURL}/synthesize?text=${encodeURIComponent(text)}`;
+}
+
 const client = axios.create({
   baseURL,
   timeout: 60000,
@@ -108,6 +119,7 @@ export async function fetchResults(
       medicines_status: data?.medicines_status ?? 'ok',
       hospitals_status: data?.hospitals_status ?? 'ok',
       soap_note_english: data?.soap_note_english,
+      voice_summary: data?.voice_summary,
     };
   } catch (err) {
     if (axios.isCancel(err)) throw err; // the caller aborted; not a lookup failure

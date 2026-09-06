@@ -13,10 +13,20 @@ export {
 
 export { ShifaSpeech, type SpeakHandle, type SpeechSignalKind } from '../voice/shifaSpeech';
 
-import { ShifaSpeech } from '../voice/shifaSpeech';
+import { ShifaSpeech, type AudioUrlResolver } from '../voice/shifaSpeech';
 import { AudioEngine } from '../voice/audioEngine';
+import { synthesizeUrl } from './api';
 
 let sharedSpeech: ShifaSpeech | null = null;
+
+/**
+ * Resolve spoken text to server TTS audio (ElevenLabs via GET /synthesize).
+ *
+ * Returns null when no backend is configured, which sends ShifaSpeech down
+ * its browser speech-synthesis fallback path instead.
+ */
+export const serverTtsResolver: AudioUrlResolver = (text: string): Promise<string | null> =>
+  Promise.resolve(synthesizeUrl(text));
 
 /**
  * Convenience wrapper matching the specified `speakUrdu(text)` signature, for
@@ -27,7 +37,12 @@ let sharedSpeech: ShifaSpeech | null = null;
  * Shifa to say something.
  */
 export function speakUrdu(text: string): Promise<void> {
-  if (!sharedSpeech) sharedSpeech = new ShifaSpeech(new AudioEngine());
+  if (!sharedSpeech) {
+    sharedSpeech = new ShifaSpeech(new AudioEngine());
+    // Prefer the real server voice; fall back to browser synthesis when the
+    // backend is not configured or /synthesize fails to load.
+    sharedSpeech.audioUrlResolver = serverTtsResolver;
+  }
   return sharedSpeech.speak(text, 'ur-PK').done;
 }
 

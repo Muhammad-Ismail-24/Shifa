@@ -88,6 +88,12 @@ export interface ResultsResponse {
   hospitals_status: LookupStatus;
   /** English SOAP note for clinical handoff (generated in Phase B). */
   soap_note_english?: string;
+  /**
+   * Short empathetic spoken summary, generated in Phase B.
+   * This — never the clinical payload — is what gets dictated via
+   * GET /synthesize when the results cards land.
+   */
+  voice_summary?: string;
 }
 
 /** One rendered turn in the chat panel. */

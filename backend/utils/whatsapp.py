@@ -12,6 +12,8 @@ Handles:
 import asyncio
 import httpx
 import json
+import os
+import tempfile
 
 from config.settings import settings
 from utils.logger import logger
@@ -20,6 +22,12 @@ from utils.model_router import ModelRouter, Phase
 
 GREENAPI_SEND_URL = (
     "https://api.green-api.com/waInstance{id}/sendMessage/{token}"
+)
+
+# sendFileByUpload: one multipart POST that both uploads the file and
+# dispatches it to the chat as a media message.
+GREENAPI_SEND_FILE_URL = (
+    "https://api.green-api.com/waInstance{id}/sendFileByUpload/{token}"
 )
 
 # Appended to triage replies (text + audio) to guide users to location/web
@@ -118,6 +126,43 @@ async def send_whatsapp_reply(chat_id: str, message: str) -> None:
         logger.error("Failed to send WhatsApp reply to %s: %s", chat_id, exc)
 
 
+async def send_whatsapp_audio(chat_id: str, audio_bytes: bytes) -> None:
+    """
+    Send an .mp3 voice reply via GreenAPI sendFileByUpload.
+
+    The file must exist on disk for httpx to stream it as multipart form
+    data; the temp file is deleted afterwards whether the send succeeded
+    or not.
+    """
+    url = GREENAPI_SEND_FILE_URL.format(
+        id=settings.GREENAPI_ID_INSTANCE,
+        token=settings.GREENAPI_API_TOKEN,
+    )
+
+    fd, tmp_path = tempfile.mkstemp(suffix=".mp3")
+    try:
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(audio_bytes)
+
+        async with httpx.AsyncClient(timeout=90.0) as client:
+            with open(tmp_path, "rb") as fh:
+                resp = await client.post(
+                    url,
+                    data={"chatId": chat_id, "fileName": "shifa_reply.mp3"},
+                    files={"file": ("shifa_reply.mp3", fh, "audio/mpeg")},
+                )
+            resp.raise_for_status()
+            logger.info("WhatsApp audio sent to %s (status %d)", chat_id, resp.status_code)
+    except Exception as exc:
+        logger.error("Failed to send WhatsApp audio to %s: %s", chat_id, exc)
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            # Already gone or never created — nothing to clean up.
+            pass
+
+
 # ---------------------------------------------------------------------------
 # Voice note → text transcription via the centralized model router
 # ---------------------------------------------------------------------------
@@ -191,8 +236,15 @@ async def process_and_reply(chat_id: str, text: str) -> None:
     """
     Background task: run the Shifa AI pipeline on the user's text,
     then send the Urdu response back via WhatsApp.
+
+    The reply goes out as audio + text. Triage questions and emergency
+    directives are dictated verbatim; after a diagnosis only the short
+    empathetic voice_summary is dictated — the long clinical payload is
+    text-only by design.
     """
     logger.info("WhatsApp pipeline start — chat_id=%s, text_len=%d", chat_id, len(text))
+
+    text_to_speak: str | None = None
 
     try:
         from agents.orchestrator import run_pipeline
@@ -206,6 +258,8 @@ async def process_and_reply(chat_id: str, text: str) -> None:
                 "question_urdu",
                 "آپ کی تکلیف کے بارے میں مزید بتائیں۔",
             )
+            # A triage question is spoken exactly as asked.
+            text_to_speak = reply
         else:
             # Step 2: Full pipeline (no GPS — use Islamabad defaults)
             result = await run_pipeline(
@@ -218,12 +272,34 @@ async def process_and_reply(chat_id: str, text: str) -> None:
                 "response_text_urdu",
                 "معذرت، ابھی جواب تیار نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
             )
+            if result.get("is_emergency"):
+                # An emergency directive must be dictated exactly as written.
+                text_to_speak = reply
+            else:
+                # Diagnosis: dictate only the short summary — never the
+                # medicines/hospitals detail that follows as text.
+                text_to_speak = result.get("voice_summary") or reply
 
     except Exception as exc:
         logger.error("WhatsApp pipeline error for %s: %s", chat_id, exc)
         reply = (
             "معاف کیجئے، ابھی نظام میں خرابی ہے۔ "
             "براہ کرم کچھ دیر بعد دوبارہ کوشش کریں۔"
+        )
+        text_to_speak = reply
+
+    # Audio first so the voice note and the text land together. TTS is strictly
+    # optional: a missing ELEVENLABS_API_KEY or a failed upload must never cost
+    # the patient the text message.
+    try:
+        from utils.tts import generate_speech
+
+        audio_bytes = await generate_speech(text_to_speak)
+        await send_whatsapp_audio(chat_id, audio_bytes)
+    except Exception as exc:
+        logger.error(
+            "WhatsApp TTS failed for %s — sending text only: %s",
+            chat_id, exc,
         )
 
     await send_whatsapp_reply(chat_id, reply + DISCLAIMER + WEBAPP_FOOTER)

@@ -36,6 +36,7 @@ class Phase(str, Enum):
     SOAP_GENERATION = "soap_generation"
     MEDICINE_SCAN = "medicine_scan"
     TRANSCRIPTION = "transcription"
+    VOICE_SUMMARY = "voice_summary"
 
 
 class ModelRouter:

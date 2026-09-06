@@ -248,6 +248,12 @@ export default function Home({ user }: { user: User | null }) {
 
         void fetchResults(sessionId, controller.signal)
           .then((enrichment) => {
+            // The empathetic summary is dictated the moment the detail cards
+            // land — never the long clinical payload. /synthesize turns it
+            // into audio (ElevenLabs), with browser synthesis as fallback.
+            if (turnRef.current === turn && enrichment.voice_summary) {
+              void speakUrdu(enrichment.voice_summary);
+            }
             // Two guards, both required. The turn check drops a result whose
             // conversation has moved on; the session check is belt-and-braces
             // against ever pairing enrichment with a different consultation.
