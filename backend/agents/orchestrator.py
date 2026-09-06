@@ -140,8 +140,10 @@ async def run_phase_b(
     Split out of the main pipeline so the patient hears Shifa's answer as soon
     as the diagnosis is ready instead of waiting on a Places round-trip.
 
-    All four tasks — medicines, hospitals, SOAP note, and voice summary — are
-    fired in a single asyncio.gather() after the diagnosis is available.
+    Three heavy tasks — medicines, hospitals, and SOAP note — are fired in a
+    single asyncio.gather() after the diagnosis is available. The voice
+    summary is generated separately in run_phase_b_stage1() so it reaches the
+    patient without waiting on SerpAPI.
     FAILURE ISOLATION: each task runs inside its own try/except, and
     return_exceptions=True ensures one failing never cancels the others.
 
@@ -158,7 +160,6 @@ async def run_phase_b(
             "medicines_status": "ok" | "failed",
             "hospitals_status": "ok" | "failed",
             "soap_note_english": str | None,
-            "voice_summary":    str,   # short spoken summary, never None
         }
     """
 
@@ -185,17 +186,12 @@ async def run_phase_b(
             original_text=original_text,
         )
 
-    async def _voice_task():
-        """Generate the short spoken summary."""
-        return await _generate_voice_summary_safe(
-            diagnosis=top_disease,
-            original_text=original_text,
-        )
-
-    # Fire all four tasks concurrently — the diagnosis (top_disease) is the
-    # only shared dependency and is already available from Phase A.
-    medicines_raw, hospitals_raw, soap_note, voice_summary = await asyncio.gather(
-        _medicines(), _hospitals(), _soap_task(), _voice_task(),
+    # Fire all three heavy tasks concurrently — the diagnosis (top_disease) is
+    # the only shared dependency and is already available from Phase A.
+    # Voice summary is generated separately in run_phase_b_stage1() so it
+    # reaches the patient without waiting on SerpAPI.
+    medicines_raw, hospitals_raw, soap_note = await asyncio.gather(
+        _medicines(), _hospitals(), _soap_task(),
         return_exceptions=True,
     )
 
@@ -255,19 +251,6 @@ async def run_phase_b(
         )
         soap_note = None
 
-    # ---- Voice summary (ran concurrently above; unwrap BaseException) ----
-    if isinstance(voice_summary, BaseException):
-        logger.error(
-            "Phase B: voice summary generation failed — %r",
-            voice_summary, exc_info=voice_summary,
-        )
-        language = "Roman Urdu" if _URDU_SCRIPT_RE.search(original_text) else "English"
-        voice_summary = (
-            VOICE_SUMMARY_FALLBACK_URDU
-            if language == "Roman Urdu"
-            else VOICE_SUMMARY_FALLBACK_EN
-        )
-
     return {
         "medicines": medicines,
         "hospitals": hospitals,
@@ -275,8 +258,33 @@ async def run_phase_b(
         "medicines_status": medicines_status,
         "hospitals_status": hospitals_status,
         "soap_note_english": soap_note,
-        "voice_summary": voice_summary,
     }
+
+
+# ---------------------------------------------------------------------------
+# Phase B Stage 1 — voice summary only (immediate, 3-5 s)
+# ---------------------------------------------------------------------------
+
+async def run_phase_b_stage1(
+    top_disease: str,
+    original_text: str = "",
+) -> dict:
+    """
+    Stage 1 of Phase B — generate only the empathetic voice summary.
+
+    This is the lightweight, latency-sensitive half of Phase B. It runs
+    inline with the /analyze response so the patient hears Shifa's spoken
+    answer within 3-5 seconds instead of waiting for SerpAPI and medicine
+    database lookups.
+
+    Returns:
+        {"voice_summary": str}  # short spoken summary, never None
+    """
+    voice_summary = await _generate_voice_summary_safe(
+        diagnosis=top_disease,
+        original_text=original_text,
+    )
+    return {"voice_summary": voice_summary}
 
 
 # ---------------------------------------------------------------------------
@@ -503,9 +511,13 @@ async def run_pipeline(
     internal = {"needs_phase_b", "top_disease", "medicines_status", "hospitals_status"}
 
     if result.get("needs_phase_b"):
-        # diseases + original_text go in so run_phase_b can generate both the
-        # SOAP note and the spoken voice_summary itself — one LLM call each,
-        # no duplicated work in this wrapper.
+        # Stage 1: voice summary (lightweight LLM call, 3-5 s) so the
+        # caller hears Shifa's spoken answer immediately.
+        stage1 = await run_phase_b_stage1(
+            result["top_disease"],
+            original_text=urdu_text,
+        )
+        # Stage 2: medicines, hospitals, SOAP note (heavy lookups).
         phase_b = await run_phase_b(
             result["top_disease"],
             latitude,
@@ -513,7 +525,7 @@ async def run_pipeline(
             diseases=result.get("diseases", []),
             original_text=urdu_text,
         )
-        result = {**result, **phase_b}
+        result = {**result, **stage1, **phase_b}
     elif result.get("is_emergency"):
         # An emergency still deserves the nearest hospital, even though the
         # spoken reply does not wait for it. Medicines are deliberately NOT

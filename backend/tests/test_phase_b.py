@@ -171,8 +171,5 @@ async def test_phase_b_never_raises(tools):
     assert set(result) == {
         "medicines", "hospitals", "disclaimer_urdu",
         "medicines_status", "hospitals_status",
-        "soap_note_english", "voice_summary",
+        "soap_note_english",
     }
-    # The voice summary must always carry something safe to say out loud —
-    # dictating the full clinical payload is exactly what it exists to prevent.
-    assert result["voice_summary"]

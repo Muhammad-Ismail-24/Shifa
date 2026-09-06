@@ -99,6 +99,10 @@ class AnalyzeResponse(BaseModel):
     the client fetches them from GET /results/{session_id} once it has the
     conversational reply on screen.
 
+    `voice_summary` is generated inline (Stage 1 of Phase B) so the patient
+    hears Shifa's spoken answer without waiting for SerpAPI or medicine
+    database lookups.
+
     `session_id` is null on turns that produce nothing to look up — a triage
     clarification, or a failed turn — which is the client's signal not to fetch.
     """
@@ -111,6 +115,7 @@ class AnalyzeResponse(BaseModel):
     is_emergency: bool
     disclaimer_urdu: str
     soap_note_english: Optional[str] = None
+    voice_summary: Optional[str] = None
 
 
 class ResultsResponse(BaseModel):
@@ -246,7 +251,7 @@ async def analyze(body: AnalyzeRequest):
     validate_analyze_request(body.urdu_text, body.latitude, body.longitude, body.history)
 
     # Import here to avoid circular imports during early startup
-    from agents.orchestrator import run_phase_b, run_pipeline_phase_a
+    from agents.orchestrator import run_phase_b, run_phase_b_stage1, run_pipeline_phase_a
     from agents.triage_agent import evaluate_triage
 
     logger.info("Running triage evaluation in /analyze...")
@@ -284,10 +289,30 @@ async def analyze(body: AnalyzeRequest):
     # Kick Phase B off now rather than when the GET arrives: by the time the
     # client has painted the reply and asked for results, the lookups are
     # already in flight or done.
+    #
+    # Two-stage architecture:
+    #   Stage 1 (inline): voice summary — lightweight LLM call, returns with
+    #       the /analyze response so the patient hears audio in 3-5 s.
+    #   Stage 2 (background): medicines, hospitals, SOAP note — heavy
+    #       lookups resolved off the critical path, served via /results.
     session_id: str | None = None
+    voice_summary: str | None = None
     if result.pop("needs_phase_b", False):
         top_disease = result.pop("top_disease", "Unknown")
         symptoms = result.pop("symptoms", [])
+
+        # Stage 1 — generate voice summary inline so the audio is ready
+        # when the client receives the diagnosis text.
+        try:
+            stage1 = await run_phase_b_stage1(
+                top_disease,
+                original_text=body.urdu_text,
+            )
+            voice_summary = stage1["voice_summary"]
+        except Exception as exc:
+            logger.error("Stage 1 voice summary failed: %s", exc)
+
+        # Stage 2 — launch the heavy lookups as a background task.
         task = asyncio.create_task(
             run_phase_b(
                 top_disease, body.latitude, body.longitude,
@@ -307,7 +332,7 @@ async def analyze(body: AnalyzeRequest):
         result.pop("top_disease", None)
         result.pop("symptoms", None)
 
-    return AnalyzeResponse(session_id=session_id, **result)
+    return AnalyzeResponse(session_id=session_id, voice_summary=voice_summary, **result)
 
 
 @app.get("/results/{session_id}", response_model=ResultsResponse)
