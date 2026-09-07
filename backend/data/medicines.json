@@ -310,5 +310,115 @@
     "avoid_urdu": "چائے کو کھانے کے فوراً بعد پینے سے گریز کریں۔",
     "see_doctor": true,
     "disclaimer_urdu": "خون کی کمی کی اصل وجہ جاننے کے لیے ٹیسٹ اور ڈاکٹر سے معائنہ ضروری ہے۔"
+  },
+  "Viral Infection": {
+    "urdu_name": "وائرل انفیکشن",
+    "medicines": [
+      {
+        "name": "Panadol (Paracetamol)",
+        "name_urdu": "پیناڈول (پیراسیٹامول)",
+        "dosage_urdu": "بخار یا بدن درد کی صورت میں ہر 6 گھنٹے بعد 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "پانی کی کمی سے بچنے کے لیے دن میں 2 سے 3 بار",
+        "otc": true
+      },
+      {
+        "name": "Strepsils Lozenges",
+        "name_urdu": "سٹریپسلز",
+        "dosage_urdu": "گلے کی خراش کے لیے دن میں 3 سے 4 بار",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "ٹھنڈا پانی، باہر کا کھانا اور رش والی جگہوں سے پرہیز کریں۔",
+    "see_doctor": false,
+    "disclaimer_urdu": "یہ صرف عمومی معلومات ہے۔ اگر بخار 3 دن سے زیادہ رہے تو ڈاکٹر سے ملیں۔"
+  },
+  "Seasonal Flu": {
+    "urdu_name": "موسمی نزلہ زکام",
+    "medicines": [
+      {
+        "name": "Panadol CF",
+        "name_urdu": "پیناڈول سی ایف",
+        "dosage_urdu": "دن میں 2 سے 3 بار",
+        "otc": true
+      },
+      {
+        "name": "Rigix (Cetirizine)",
+        "name_urdu": "رجکس",
+        "dosage_urdu": "رات میں 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "Strepsils Lozenges",
+        "name_urdu": "سٹریپسلز",
+        "dosage_urdu": "گلے کی تکلیف کے لیے دن میں 3 بار",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "ٹھنڈا پانی، کھٹی چیزیں، اور رش سے گریز کریں۔",
+    "see_doctor": false,
+    "disclaimer_urdu": "یہ صرف عمومی معلومات ہے۔ اگر علامات شدید ہوں تو ڈاکٹر سے ملیں۔"
+  },
+  "COVID-19": {
+    "urdu_name": "کووڈ-19 (کورونا)",
+    "medicines": [
+      {
+        "name": "Panadol (Paracetamol)",
+        "name_urdu": "پیناڈول (پیراسیٹامول)",
+        "dosage_urdu": "بخار اور بدن درد کے لیے ہر 6 گھنٹے بعد 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "پانی کی کمی پوری کرنے کے لیے",
+        "otc": true
+      },
+      {
+        "name": "Vitamin C",
+        "name_urdu": "وٹامن سی",
+        "dosage_urdu": "روزانہ 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "Steam Inhalation",
+        "name_urdu": "بھاپ لینا",
+        "dosage_urdu": "دن میں 2 سے 3 بار",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "رش والی جگہوں سے پرہیز، ماسک پہنیں، ہاتھ دھوتے رہیں۔",
+    "see_doctor": true,
+    "disclaimer_urdu": "اگر سانس لینے میں دشواری ہو یا آکسیجن لیول کم ہو تو فوری طور پر ہسپتال جائیں۔"
+  },
+  "General Malaise": {
+    "urdu_name": "عمومی بے چینی / تھکاوٹ",
+    "medicines": [
+      {
+        "name": "Paracetamol (Panadol)",
+        "name_urdu": "پیراسیٹامول (پیناڈول)",
+        "dosage_urdu": "درد یا ہلکے بخار کے لیے ہر 6 گھنٹے بعد 1 گولی",
+        "otc": true
+      },
+      {
+        "name": "ORS",
+        "name_urdu": "او آر ایس",
+        "dosage_urdu": "پانی کی کمی سے بچنے کے لیے دن میں 2 بار",
+        "otc": true
+      },
+      {
+        "name": "Multivitamin",
+        "name_urdu": "ملٹی وٹامن",
+        "dosage_urdu": "روزانہ 1 گولی",
+        "otc": true
+      }
+    ],
+    "avoid_urdu": "بھاری ورزش، بے خوابی اور ذہنی دباؤ سے پرہیز کریں۔",
+    "see_doctor": false,
+    "disclaimer_urdu": "یہ صرف عمومی معلومات ہے۔ اگر علامات بڑھیں یا 3 دن سے زیادہ رہیں تو ڈاکٹر سے ملیں۔"
   }
 }
