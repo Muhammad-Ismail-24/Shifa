@@ -58,7 +58,7 @@ class ModelRouter:
         Phase.TRIAGE: 150,
         Phase.SYMPTOM_EXTRACTION: 200,
         Phase.DISEASE_IDENTIFICATION: 300,
-        Phase.RESPONSE_COMPOSITION: 150,
+        Phase.RESPONSE_COMPOSITION: 250,
         Phase.VOICE_SUMMARY: 100,
     }
 
