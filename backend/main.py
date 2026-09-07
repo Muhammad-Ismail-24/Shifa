@@ -379,26 +379,37 @@ async def results(session_id: str, user_id: str | None = Security(get_current_us
     soap_note = data.get("soap_note_english")
 
     # ---- Persist to medical_history when the user is authenticated ----
+    logger.info(
+        "[DB-AUDIT] user_id=%s soap_note_present=%s session_id=%s",
+        user_id, bool(soap_note), session_id,
+    )
     if user_id and soap_note:
         try:
             supabase_client = get_supabase()
+            logger.info("[DB-AUDIT] supabase_client is %s", "available" if supabase_client is not None else "None")
             if supabase_client is not None:
-                supabase_client.table("medical_history").insert({
+                payload = {
                     "user_id": user_id,
                     "session_id": session_id,
                     "symptoms": phase_a_data.get("symptoms", ""),
                     "diagnosis": phase_a_data.get("diagnosis", ""),
                     "soap_note": soap_note,
-                }).execute()
+                }
+                logger.info("[DB-AUDIT] INSERT payload: %s", {k: (v[:80] + '...' if isinstance(v, str) and len(v) > 80 else v) for k, v in payload.items()})
+                response = supabase_client.table("medical_history").insert(payload).execute()
                 logger.info(
-                    "Medical history saved for user %s, session %s.",
-                    user_id, session_id,
+                    "[DB-AUDIT] INSERT response: data=%s, count=%s",
+                    response.data, getattr(response, 'count', 'N/A'),
                 )
+            else:
+                logger.warning("[DB-AUDIT] Supabase client is None — skipping insert entirely.")
         except Exception as exc:
             logger.error(
-                "Failed to save medical history for user %s, session %s: %s",
+                "[DB-AUDIT] INSERT FAILED for user %s, session %s: %r",
                 user_id, session_id, exc,
             )
+    else:
+        logger.warning("[DB-AUDIT] Skipping insert — user_id=%s, soap_note_present=%s", user_id, bool(soap_note))
 
     return ResultsResponse(
         medicines=data.get("medicines", []),

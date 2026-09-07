@@ -15,12 +15,15 @@ Every route that injects this dependency MUST handle None gracefully.
 import os
 from typing import Optional
 
+from dotenv import load_dotenv
 import jwt
 from fastapi import Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from supabase import Client, create_client
 
 from utils.logger import logger
+
+load_dotenv()  # Ensure .env is loaded even without --env-file
 
 # ---------------------------------------------------------------------------
 # Supabase client (server-side — service_role key, not the anon key)
