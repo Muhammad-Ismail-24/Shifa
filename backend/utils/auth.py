@@ -85,7 +85,7 @@ async def get_current_user(
         payload = jwt.decode(
             token.credentials,
             _JWT_SECRET,
-            algorithms=["HS256"],
+            algorithms=["HS256", "RS256"],
             options={"verify_exp": True},
         )
         user_id: str | None = payload.get("sub")
