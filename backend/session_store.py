@@ -220,3 +220,14 @@ def _reset_for_tests() -> None:
     for sid in list(_sessions):
         _drop(sid, reason="test reset")
     _sessions.clear()
+def create_session_with_id(session_id: str, task: asyncio.Task | None, *, phase_a_data: dict | None = None) -> str:
+    if task is not None:
+        task.add_done_callback(_consume_exception)
+
+    _sessions[session_id] = {
+        "created_at": time.time(),
+        "task": task,
+        "phase_a_data": phase_a_data or {},
+    }
+    _prune()
+    return session_id

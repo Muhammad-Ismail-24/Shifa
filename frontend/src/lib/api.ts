@@ -59,16 +59,34 @@ export class ShifaApiError extends Error {
   }
 }
 
+
 export async function analyze(payload: AnalyzeRequest): Promise<AnalyzeResponse> {
   if (!isBackendConfigured) {
     throw new ShifaApiError('network', 'VITE_API_URL is not configured');
   }
 
   try {
-    const { data } = await client.post<AnalyzeResponse>('/analyze', payload, {
-      timeout: 120_000, // 2 min — triage + Phase A + Stage 1 voice summary
+    const { data: initialResponse } = await client.post<any>('/analyze', payload, {
+      timeout: 10_000, 
     });
-    return data;
+
+    const sessionId = initialResponse.session_id;
+    if (!sessionId) {
+      return initialResponse as AnalyzeResponse;
+    }
+
+    // Polling
+    while (true) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      const { data: statusData } = await client.get<any>(`/status/${encodeURIComponent(sessionId)}`);
+      
+      if (statusData.status === 'completed') {
+        return statusData.result;
+      } else if (statusData.status === 'error') {
+        throw new ShifaApiError('server', 'Pipeline error');
+      }
+    }
+
   } catch (err) {
     if (axios.isAxiosError(err)) {
       if (err.code === 'ECONNABORTED') {
@@ -81,6 +99,7 @@ export async function analyze(payload: AnalyzeRequest): Promise<AnalyzeResponse>
     throw new ShifaApiError('network', 'Could not reach Shifa');
   }
 }
+
 
 function allFailed(status: LookupStatus): ResultsResponse {
   return {
