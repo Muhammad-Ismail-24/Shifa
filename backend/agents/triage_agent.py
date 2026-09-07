@@ -1,9 +1,19 @@
 # Turn 1: evaluate history + input → proceed or clarify
 
-import json
+import logging
 from config.prompts import TRIAGE_EVALUATION_PROMPT
 from utils.ai_client import generate_with_retry
-from utils.model_router import Phase
+from utils.model_router import Phase, sanitize_json, safe_json_parse
+
+logger = logging.getLogger(__name__)
+
+# Gemini stops mid-generation when a token cap is hit, leaving unterminated
+# JSON behind. "proceed" keeps the consultation moving — the symptom
+# extractor asks for clarification if the input really is too thin.
+TRIAGE_PARSE_FALLBACK = {
+    "status": "proceed",
+    "reasoning": "parsing failed, proceeding safely",
+}
 
 async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
     """
@@ -27,14 +37,13 @@ async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
         full_prompt,
         phase=Phase.TRIAGE,
     )
-    
-    raw_text = raw_response.strip()
-    if raw_text.startswith("```json"):
-        raw_text = raw_text[7:]
-    if raw_text.startswith("```"):
-        raw_text = raw_text[3:]
-    if raw_text.endswith("```"):
-        raw_text = raw_text[:-3]
-        
-    return json.loads(raw_text.strip())
+
+    parsed = safe_json_parse(sanitize_json(raw_response), TRIAGE_PARSE_FALLBACK)
+    if not isinstance(parsed, dict):
+        logger.warning(
+            "Triage returned %s, expected dict — using safe fallback.",
+            type(parsed).__name__,
+        )
+        return dict(TRIAGE_PARSE_FALLBACK)
+    return parsed
 

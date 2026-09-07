@@ -27,7 +27,17 @@ async def generate_with_retry(
     """
     # Primary and fallback models, selected centrally by phase.
     models = ModelRouter.route(phase)
-    max_retries = 3
+
+    # Latency-critical conversational phases get fewer per-model retries:
+    # the fallback model chain is their safety net, and each retry adds
+    # backoff sleep that eats into the Vercel 60-second budget.
+    _FAST_PHASES = {
+        Phase.TRIAGE,
+        Phase.SYMPTOM_EXTRACTION,
+        Phase.DISEASE_IDENTIFICATION,
+        Phase.RESPONSE_COMPOSITION,
+    }
+    max_retries = 2 if phase in _FAST_PHASES else 3
 
     # Resolve token limit: explicit arg > phase default > None (unlimited).
     token_limit = max_output_tokens or ModelRouter.max_tokens(phase)

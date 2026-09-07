@@ -1,4 +1,5 @@
 import re
+import json
 import asyncio
 from enum import Enum
 from google import genai
@@ -50,10 +51,13 @@ class ModelRouter:
     """
 
     # Per-phase token budget — phases that don't appear here get no cap.
+    # Sized so the COMPLETE JSON payload always fits: caps that are too
+    # tight make Gemini stop mid-generation and return unterminated JSON
+    # (missing closing brace/quote), which crashes json.loads() downstream.
     _PHASE_MAX_TOKENS: dict[Phase, int] = {
-        Phase.TRIAGE: 50,
-        Phase.SYMPTOM_EXTRACTION: 80,
-        Phase.DISEASE_IDENTIFICATION: 150,
+        Phase.TRIAGE: 150,
+        Phase.SYMPTOM_EXTRACTION: 200,
+        Phase.DISEASE_IDENTIFICATION: 300,
         Phase.RESPONSE_COMPOSITION: 150,
         Phase.VOICE_SUMMARY: 100,
     }
@@ -61,10 +65,11 @@ class ModelRouter:
     _PHASE_MODELS: dict[Phase, list[str]] = {
         Phase.TRANSCRIPTION: list(FALLBACK_MODELS),
         # TRIAGE / SYMPTOM_EXTRACTION / DISEASE_IDENTIFICATION are the
-        # three synchronous Phase A setup tasks. Each returns a tiny JSON
-        # payload and must complete in under 2 seconds to keep the
-        # conversational reply fast. Route to the fastest flash-lite
-        # models with strict token caps.
+        # three synchronous Phase A setup tasks. Each returns a small JSON
+        # payload and must complete fast to keep the conversational reply
+        # inside the Vercel 60-second budget. Route to the fastest
+        # flash-lite models; the token caps above are sized to fit the
+        # complete JSON payload.
         Phase.TRIAGE: [
             "gemini-3.5-flash-lite",
             "gemini-3.1-flash-lite",
@@ -95,10 +100,15 @@ class ModelRouter:
 
     @classmethod
     def route(cls, phase: Phase | None = None) -> list[str]:
-        """Return the ordered fallback model list for a phase."""
+        """Return the ordered, deduplicated fallback model list for a phase."""
         if phase is None:
             return list(FALLBACK_MODELS)
-        return list(cls._PHASE_MODELS.get(phase, FALLBACK_MODELS))
+        chain = cls._PHASE_MODELS.get(phase, FALLBACK_MODELS)
+        # dict.fromkeys drops duplicates — every per-phase chain below
+        # prepends flash-lite models that FALLBACK_MODELS already contains.
+        # Re-asking a model that just 429'd only burns the Vercel 60-second
+        # budget for zero new information.
+        return list(dict.fromkeys(chain))
 
     @classmethod
     def max_tokens(cls, phase: Phase | None = None) -> int | None:
@@ -113,6 +123,22 @@ def sanitize_json(raw: str) -> str:
     text = re.sub(r"^```(?:json)?\s*\n?", "", text, count=1)
     text = re.sub(r"\n?```\s*$", "", text, count=1)
     return text.strip()
+
+
+def safe_json_parse(raw: str, fallback):
+    """
+    Parse LLM JSON without letting a malformed payload crash the pipeline.
+
+    Gemini occasionally stops mid-generation when a token cap is hit, leaving
+    unterminated JSON behind (missing closing brace/quote). json.loads()
+    raising here would fail the whole consultation, so callers pass a safe
+    default to fall back to instead.
+    """
+    try:
+        return json.loads(raw)
+    except (json.JSONDecodeError, AttributeError, TypeError) as exc:
+        logger.warning("JSON parse failed (%s) — using safe fallback.", exc)
+        return fallback
 
 async def generate_content_with_fallback_async(prompt: str, response_mime_type: str = None) -> str:
     last_error = None

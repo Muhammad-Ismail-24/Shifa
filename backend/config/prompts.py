@@ -31,6 +31,8 @@ RULES:
 - If clarification is needed, ask exactly ONE empathetic, doctor-like follow-up question in simple everyday Urdu to get the missing information. (e.g., "یہ درد کب سے ہے اور کیا آپ کو الٹی بھی آ رہی ہے؟")
 - If ALL 3 elements are present in the history + latest input, return status "proceed".
 - CRITICAL: Output ONLY raw, valid JSON. Do not use Markdown blocks (```json). Do not add any conversational text.
+- Return ONLY valid JSON. Keep the payload minimal — omit long reasoning strings entirely; any "reasoning" field must be at most 5 words.
+- Keep "question_urdu" to ONE short sentence (under 15 words).
 
 FORMAT (Incomplete Picture):
 {"status": "clarification_needed", "question_urdu": "<your_urdu_question_here>"}
@@ -68,6 +70,8 @@ Rules:
 - Do NOT include diseases — only symptoms.
 - Do NOT include any explanation, preamble, or markdown.
 - Respond with valid JSON only — a flat array of strings.
+- Return ONLY valid JSON — at most 5 symptom strings, shortest possible names.
+- Never wrap the array in an object or add "reasoning" / "explanation" keys.
 
 Example input:  "مجھے تین دن سے تیز بخار ہے، سر درد اور الٹی بھی آ رہی ہے"
 Example output: ["high_fever_3_days", "headache", "vomiting"]
@@ -105,6 +109,8 @@ Rules:
 - Base your reasoning strictly on the provided RAG context, not general knowledge alone.
 - Do NOT include any explanation, preamble, or markdown.
 - Respond with valid JSON only.
+- Return ONLY valid JSON — the array of 2-3 objects, nothing else. Do not add "reasoning" or "explanation" fields.
+- Keep each "urdu" name to 1-3 words.
 
 CLINICAL PRE-TEST PROBABILITY GUARDRAILS (MANDATORY):
 - MEDICAL REASONING RULE (HORSES, NOT ZEBRAS): Apply probabilistic thinking.

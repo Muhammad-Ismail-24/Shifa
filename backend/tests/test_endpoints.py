@@ -509,10 +509,12 @@ async def test_soap_agent_generation(monkeypatch):
         def __init__(self, *args, **kwargs):
             pass
 
-        def generate_content(self, prompt):
+        # generate_with_retry passes generation_config as a keyword, so the
+        # mock must accept **kwargs like the real SDK method does.
+        def generate_content(self, prompt, **kwargs):
             return FakeResponse()
 
-        async def generate_content_async(self, prompt):
+        async def generate_content_async(self, prompt, **kwargs):
             return FakeResponse()
 
     monkeypatch.setattr(soap_agent.genai, "GenerativeModel", FakeModel)
