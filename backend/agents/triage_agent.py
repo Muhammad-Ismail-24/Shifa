@@ -3,6 +3,7 @@
 import json
 from config.prompts import TRIAGE_EVALUATION_PROMPT
 from utils.ai_client import generate_with_retry
+from utils.model_router import Phase
 
 async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
     """
@@ -22,7 +23,10 @@ async def evaluate_triage(latest_input: str, history: list[dict]) -> dict:
     
     full_prompt = f"{TRIAGE_EVALUATION_PROMPT}\n\nConversation History:\n{history_text}\n\nLatest Patient Input:\n{latest_input}"
 
-    raw_response = await generate_with_retry(full_prompt)
+    raw_response = await generate_with_retry(
+        full_prompt,
+        phase=Phase.TRIAGE,
+    )
     
     raw_text = raw_response.strip()
     if raw_text.startswith("```json"):

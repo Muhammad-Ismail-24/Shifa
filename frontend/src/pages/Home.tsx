@@ -318,6 +318,12 @@ export default function Home({ user }: { user: User | null }) {
     [],
   );
 
+  // Reset the document title when returning to Home — info pages set their own
+  // title via PageShell and it sticks after navigating back.
+  useEffect(() => {
+    document.title = 'Shifa — Speak. Understand. Know what comes next.';
+  }, []);
+
   const inputsDisabled = isLoading;
   const started = messages.length > 0;
 
@@ -412,7 +418,7 @@ export default function Home({ user }: { user: User | null }) {
           long SOAP notes / hospital lists would clip at the shell instead of
           scrolling.
         */}
-        <main className="flex-1 min-h-0 overflow-y-auto md:overflow-hidden md:grid md:grid-cols-2 md:grid-rows-[minmax(0,1fr)] md:gap-6 px-5 md:px-8 md:pb-8">
+        <main className="flex-1 min-h-0 overflow-y-auto md:overflow-hidden md:grid md:grid-cols-2 md:grid-rows-[minmax(0,1fr)] md:gap-6 px-5 md:px-8 md:pb-8 pt-16">
           {/* ---------------- Chat panel ---------------- */}
           {/* min-h-full on mobile is what pins the input bar to the bottom of the
               viewport on an empty conversation: the panel fills the scroller, the
@@ -453,6 +459,7 @@ export default function Home({ user }: { user: User | null }) {
               micSupported={dictation.supported}
               onToggleMic={dictation.toggle}
               notice={notice}
+              language={language}
             />
           </section>
 
@@ -613,10 +620,11 @@ interface InputBarProps {
   micSupported: boolean;
   onToggleMic: () => void;
   notice: string | null;
+  language: 'ur' | 'en';
 }
 
 const InputBar = forwardRef<HTMLInputElement, InputBarProps>(function InputBar(
-  { value, onChange, onSubmit, disabled, isLoading, isRecording, micSupported, onToggleMic, notice },
+  { value, onChange, onSubmit, disabled, isLoading, isRecording, micSupported, onToggleMic, notice, language },
   ref,
 ) {
   return (
@@ -637,15 +645,15 @@ const InputBar = forwardRef<HTMLInputElement, InputBarProps>(function InputBar(
         <input
           ref={ref}
           type="text"
-          dir="rtl"
-          lang="ur"
+          dir={language === 'ur' ? 'rtl' : 'ltr'}
+          lang={language === 'ur' ? 'ur' : 'en'}
           value={value}
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="اپنی علامات لکھیں یا بولیں..."
-          aria-label="Describe your symptoms in Urdu"
-          className="min-w-0 flex-1 bg-transparent px-3 py-2 text-lg text-black placeholder:text-black/40 focus:outline-none disabled:opacity-50 overflow-hidden text-ellipsis whitespace-nowrap"
-          style={{ fontFamily: "'Noto Nastaliq Urdu', serif" }}
+          placeholder={language === 'ur' ? 'اپنی علامات لکھیں یا بولیں...' : 'Describe your symptoms...'}
+          aria-label={language === 'ur' ? 'Describe your symptoms in Urdu' : 'Describe your symptoms'}
+          className="min-w-0 flex-1 bg-transparent px-3 pe-12 py-2 text-lg text-black placeholder:text-black/40 focus:outline-none disabled:opacity-50 overflow-hidden text-ellipsis whitespace-nowrap"
+          style={{ fontFamily: language === 'ur' ? "'Noto Nastaliq Urdu', serif" : 'inherit' }}
         />
 
         {/*

@@ -4,6 +4,7 @@ import json
 import logging
 from config.prompts import SYMPTOM_EXTRACTION_PROMPT
 from utils.ai_client import generate_with_retry
+from utils.model_router import Phase
 from rag.retriever import retrieve
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,10 @@ async def extract_symptoms(urdu_text: str) -> list[str]:
         f"Patient said:\n{urdu_text}"
     )
 
-    raw_response = await generate_with_retry(prompt)
+    raw_response = await generate_with_retry(
+        prompt,
+        phase=Phase.SYMPTOM_EXTRACTION,
+    )
     raw = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
     return json.loads(raw)
 

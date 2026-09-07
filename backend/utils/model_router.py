@@ -51,12 +51,35 @@ class ModelRouter:
 
     # Per-phase token budget — phases that don't appear here get no cap.
     _PHASE_MAX_TOKENS: dict[Phase, int] = {
+        Phase.TRIAGE: 50,
+        Phase.SYMPTOM_EXTRACTION: 80,
+        Phase.DISEASE_IDENTIFICATION: 150,
         Phase.RESPONSE_COMPOSITION: 150,
         Phase.VOICE_SUMMARY: 100,
     }
 
     _PHASE_MODELS: dict[Phase, list[str]] = {
         Phase.TRANSCRIPTION: list(FALLBACK_MODELS),
+        # TRIAGE / SYMPTOM_EXTRACTION / DISEASE_IDENTIFICATION are the
+        # three synchronous Phase A setup tasks. Each returns a tiny JSON
+        # payload and must complete in under 2 seconds to keep the
+        # conversational reply fast. Route to the fastest flash-lite
+        # models with strict token caps.
+        Phase.TRIAGE: [
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite",
+            *FALLBACK_MODELS,
+        ],
+        Phase.SYMPTOM_EXTRACTION: [
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite",
+            *FALLBACK_MODELS,
+        ],
+        Phase.DISEASE_IDENTIFICATION: [
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite",
+            *FALLBACK_MODELS,
+        ],
         # RESPONSE_COMPOSITION is the Phase A Urdu reply — latency-critical,
         # must finish well before the Vercel 60-second timeout. Route to the
         # fastest flash-lite models and cap output at 150 tokens.

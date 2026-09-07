@@ -3,6 +3,7 @@
 import json
 from config.prompts import DISEASE_IDENTIFICATION_PROMPT
 from utils.ai_client import generate_with_retry
+from utils.model_router import Phase
 from rag.retriever import retrieve
 
 async def identify_diseases(symptoms: list[str]) -> list[dict]:
@@ -27,7 +28,10 @@ async def identify_diseases(symptoms: list[str]) -> list[dict]:
         f"Symptoms: {symptoms}"
     )
 
-    raw_response = await generate_with_retry(prompt)
+    raw_response = await generate_with_retry(
+        prompt,
+        phase=Phase.DISEASE_IDENTIFICATION,
+    )
     raw = raw_response.strip().removeprefix('```json').removesuffix('```').strip()
     return json.loads(raw)
 
