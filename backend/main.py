@@ -201,6 +201,11 @@ async def shutdown_sessions():
     session_store.shutdown()
 
 
+@app.get("/")
+async def root():
+    return {"status": "online", "service": "Shifa Healthcare SaaS API"}
+
+
 @app.get("/health")
 async def health():
     """Simple liveness probe."""
