@@ -39,22 +39,19 @@ EMERGENCY_RESPONSE_URDU = "فوری طور پر ہسپتال جائیں"
 
 VOICE_SUMMARY_PROMPT = (
     "Based on this diagnosis: {diagnosis}, write a very brief, empathetic "
-    "2-sentence summary in {language}. Say something like: "
-    "'Please don't worry, based on your symptoms it looks like [Condition]. "
-    "I have listed the medicines and nearby hospitals for you below.' "
-    "Do not include markdown. Output ONLY the two sentences."
+    "2-sentence summary in natural Urdu script (اردو). "
+    "Always respond in Urdu — never in English or Roman Urdu. "
+    "Say something like: "
+    "'پریشان نہ ہوں، آپ کی علامات سے لگتا ہے کہ [بیماری] ہے۔ "
+    "میں نے نیچے دوائیں اور قریبی ہسپتال درج کر دیے ہیں۔' "
+    "Do not include markdown. Output ONLY the two sentences in Urdu script."
 )
 
 # Spoken when the LLM call fails or times out. A canned fallback is safer
 # than dictating the full clinical payload.
 VOICE_SUMMARY_FALLBACK_URDU = (
-    "Ghabraen nahin. Aap ki alamaton ke mutabiq shifa ne ilaaj tayyar kar "
-    "liya hai — neeche dawaein aur qareebi aspatal diye gaye hain."
-)
-
-VOICE_SUMMARY_FALLBACK_EN = (
-    "Please don't worry. Based on your symptoms, I have prepared the "
-    "medicines and nearby hospitals for you below."
+    "پریشان نہ ہوں۔ آپ کی علامات کے مطابق شفا نے علاج تیار کر "
+    "لیا ہے — نیچے دوائیں اور قریبی ہسپتال دیے گئے ہیں۔"
 )
 
 # Arabic-script ranges — a rough but reliable "did the patient write Urdu"
@@ -456,12 +453,15 @@ async def _generate_voice_summary_safe(
     """
     Generate the short empathetic summary that Phase B dictates.
 
+    Always generates in Urdu — Shifa is a voice-first Urdu product and the
+    spoken summary must be in the patient's language regardless of how the
+    input arrived (Urdu script, Roman Urdu, or English).
+
     Never raises and never returns None: the pipeline result must always
     carry something safe to say out loud, because dictating the full clinical
     payload to a patient is exactly what this feature exists to prevent.
     """
-    language = "Roman Urdu" if _URDU_SCRIPT_RE.search(original_text) else "English"
-    prompt = VOICE_SUMMARY_PROMPT.format(diagnosis=diagnosis, language=language)
+    prompt = VOICE_SUMMARY_PROMPT.format(diagnosis=diagnosis)
 
     try:
         summary = await generate_with_retry(
@@ -474,11 +474,7 @@ async def _generate_voice_summary_safe(
     except Exception as exc:
         logger.error("Voice summary generation failed (%s) — using fallback.", exc)
 
-    return (
-        VOICE_SUMMARY_FALLBACK_URDU
-        if language == "Roman Urdu"
-        else VOICE_SUMMARY_FALLBACK_EN
-    )
+    return VOICE_SUMMARY_FALLBACK_URDU
 
 
 # ---------------------------------------------------------------------------
