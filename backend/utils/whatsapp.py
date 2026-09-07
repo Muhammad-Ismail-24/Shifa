@@ -207,7 +207,6 @@ async def transcribe_voice_note(download_url: str) -> str:
                 prompt=VOICE_TRANSCRIPTION_PROMPT,
                 media_data=[{"mime_type": "audio/ogg", "data": audio_bytes}],
                 phase=Phase.TRANSCRIPTION,
-                timeout=VOICE_TRANSCRIPTION_TIMEOUT_SECONDS,
             ),
             timeout=VOICE_TRANSCRIPTION_TIMEOUT_SECONDS,
         )
