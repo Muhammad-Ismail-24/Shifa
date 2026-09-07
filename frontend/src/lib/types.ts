@@ -45,6 +45,7 @@ export interface AnalyzeRequest {
   longitude: number;
   /** Backend is stateless; the frontend carries the conversation. [] on turn 1. */
   history: ConversationMessage[];
+  language?: 'ur' | 'en';
 }
 
 export interface AnalyzeResponse {

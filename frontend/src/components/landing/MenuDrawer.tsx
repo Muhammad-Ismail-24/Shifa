@@ -110,11 +110,8 @@ export function MenuDrawer({ open, onClose }: Props) {
           ))}
         </nav>
 
-        <div className="menu__foot">
-          <span className="menu__footLabel">Get in touch</span>
-          <a className="menu__mail" href="mailto:hello@shifa.health">
-            hello@shifa.health
-          </a>
+        <div className="mt-auto pt-6">
+          <p className="text-xs text-black/40">© 2026 Shifa</p>
         </div>
       </div>
     </div>

@@ -14,25 +14,21 @@
 import { ConnectionMap } from '../components/informational/ConnectionMap';
 import { PageHero } from '../components/informational/PageHero';
 import { PageShell } from '../components/informational/PageShell';
+import { useState } from 'react';
 import { Reveal } from '../components/informational/Reveal';
 import { SectionHeader } from '../components/informational/SectionHeader';
 import { UrduAccent } from '../components/informational/UrduAccent';
-import { Mail } from '../components/informational/icons';
-
-/** From pages.md. Every one is marked a placeholder there, so none are linked. */
-const PLANNED_CHANNELS = [
-  { label: 'Team', value: 'team@shifa.ai' },
-  { label: 'General inquiries', value: 'hello@shifa.ai' },
-  { label: 'Press & partnerships', value: 'press@shifa.ai' },
-];
-
-const PLANNED_SOCIAL = [
-  { label: 'GitHub', value: 'github.com/team-shifa' },
-  { label: 'LinkedIn', value: 'linkedin.com/company/shifa-ai' },
-  { label: 'Twitter / X', value: '@ShifaAI_PK' },
-];
 
 export default function Contact() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setFormData({ name: '', email: '', message: '' });
+  };
+
   return (
     <PageShell title="Contact">
       <PageHero
@@ -56,44 +52,55 @@ export default function Contact() {
             </div>
 
             <Reveal>
-              <a className="mailCard" href="mailto:hello@shifa.health">
-                <span className="mailCard__icon" aria-hidden="true">
-                  <Mail size={20} />
-                </span>
-                <span className="mailCard__text">
-                  <span className="mailCard__label">Email Team Shifa</span>
-                  <span className="mailCard__value">hello@shifa.health</span>
-                </span>
-              </a>
-
-              <div className="planned">
-                <p className="planned__intro">
-                  These addresses and accounts are reserved for Shifa but are{' '}
-                  <strong>not yet active</strong>. Until they are, everything reaches us at the
-                  address above.
-                </p>
-
-                <dl className="planned__list">
-                  {PLANNED_CHANNELS.map((channel) => (
-                    <div className="planned__row" key={channel.value}>
-                      <dt className="planned__label">{channel.label}</dt>
-                      <dd className="planned__value">
-                        {channel.value}
-                        <span className="planned__tag">Not yet active</span>
-                      </dd>
-                    </div>
-                  ))}
-                  {PLANNED_SOCIAL.map((channel) => (
-                    <div className="planned__row" key={channel.value}>
-                      <dt className="planned__label">{channel.label}</dt>
-                      <dd className="planned__value">
-                        {channel.value}
-                        <span className="planned__tag">Not yet active</span>
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
+              {submitted ? (
+                <div className="flex flex-col items-center justify-center p-8 text-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md">
+                  <div className="w-12 h-12 rounded-full bg-green-500/20 text-green-700 flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-black mb-2">Thank you!</h3>
+                  <p className="text-sm text-black/70">Your message has been received. We'll get back to you soon.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full rounded-xl border border-white/20 bg-white/10 backdrop-blur-md px-4 py-3 text-sm text-black placeholder:text-black/40 focus:outline-none focus:ring-1 focus:ring-black/20"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full rounded-xl border border-white/20 bg-white/10 backdrop-blur-md px-4 py-3 text-sm text-black placeholder:text-black/40 focus:outline-none focus:ring-1 focus:ring-black/20"
+                    />
+                  </div>
+                  <div>
+                    <textarea
+                      placeholder="Message"
+                      required
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full rounded-xl border border-white/20 bg-white/10 backdrop-blur-md px-4 py-3 text-sm text-black placeholder:text-black/40 focus:outline-none focus:ring-1 focus:ring-black/20 min-h-[120px] resize-none"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full rounded-xl bg-black text-white py-3 text-sm font-medium transition hover:bg-black/85 disabled:opacity-40"
+                  >
+                    Send message
+                  </button>
+                </form>
+              )}
             </Reveal>
           </div>
         </div>
