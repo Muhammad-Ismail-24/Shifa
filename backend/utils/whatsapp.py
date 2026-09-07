@@ -175,10 +175,6 @@ VOICE_TRANSCRIPTION_PROMPT = (
     "commentary, no conversational filler."
 )
 
-# Strict deadline for the transcription request. The webhook worker must
-# never hang on a slow model call and block the event loop.
-VOICE_TRANSCRIPTION_TIMEOUT_SECONDS = 15.0
-
 
 async def transcribe_voice_note(download_url: str) -> str:
     """
@@ -186,7 +182,7 @@ async def transcribe_voice_note(download_url: str) -> str:
     centralized model router (Phase.TRANSCRIPTION).
 
     Returns the transcribed text, or "" if the download or transcription
-    fails or times out.
+    fails.
     """
     try:
         # Step 1: Download the audio file
@@ -198,29 +194,23 @@ async def transcribe_voice_note(download_url: str) -> str:
         logger.info("Voice note downloaded — %d bytes", len(audio_bytes))
 
         # Step 2: Transcribe via the centralized router — audio-capable
-        # flash models, fallback chain, per-attempt timeout.
+        # flash models, fallback chain.  No artificial timeout: audio
+        # transcription legitimately takes 20-45 s with model fallback,
+        # and generate_with_retry already handles retries and model
+        # pivoting internally.  The SDK's own connection lifespan is the
+        # ultimate safety net.
         models = ModelRouter.route(Phase.TRANSCRIPTION)
         logger.info("Transcribing voice note via routed models: %s", ", ".join(models))
 
-        transcribed = await asyncio.wait_for(
-            generate_with_retry(
-                prompt=VOICE_TRANSCRIPTION_PROMPT,
-                media_data=[{"mime_type": "audio/ogg", "data": audio_bytes}],
-                phase=Phase.TRANSCRIPTION,
-            ),
-            timeout=VOICE_TRANSCRIPTION_TIMEOUT_SECONDS,
+        transcribed = await generate_with_retry(
+            prompt=VOICE_TRANSCRIPTION_PROMPT,
+            media_data=[{"mime_type": "audio/ogg", "data": audio_bytes}],
+            phase=Phase.TRANSCRIPTION,
         )
 
         text = transcribed.strip()
         logger.info("Voice note transcribed — len=%d", len(text))
         return text
-
-    except asyncio.TimeoutError:
-        logger.error(
-            "Voice note transcription timed out after %.0fs.",
-            VOICE_TRANSCRIPTION_TIMEOUT_SECONDS,
-        )
-        return ""
 
     except Exception as exc:
         logger.error("Voice note transcription failed: %s", exc)
