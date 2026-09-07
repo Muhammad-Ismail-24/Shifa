@@ -8,6 +8,7 @@ async def generate_with_retry(
     system_instruction: str = None,
     media_data: list | None = None,
     phase: Phase | None = None,
+    max_output_tokens: int | None = None,
 ) -> str:
     """
     Centralized Gemini call with model fallback and retry.
@@ -21,10 +22,20 @@ async def generate_with_retry(
         after the prompt, for multimodal requests (audio/images).
       - phase: routes model selection through ModelRouter instead of the
         default chain.
+      - max_output_tokens: explicit cap on generated tokens.  When omitted,
+        the per-phase default from ModelRouter is used (if any).
     """
     # Primary and fallback models, selected centrally by phase.
     models = ModelRouter.route(phase)
     max_retries = 3
+
+    # Resolve token limit: explicit arg > phase default > None (unlimited).
+    token_limit = max_output_tokens or ModelRouter.max_tokens(phase)
+    gen_config = (
+        genai.GenerationConfig(max_output_tokens=token_limit)
+        if token_limit
+        else None
+    )
 
     for model_name in models:
         for attempt in range(max_retries):
@@ -34,7 +45,10 @@ async def generate_with_retry(
                 full_prompt = f"{system_instruction}\n\n{prompt}" if system_instruction else prompt
                 contents = [full_prompt, *media_data] if media_data else full_prompt
                 if hasattr(model, "generate_content_async"):
-                    res = model.generate_content_async(contents)
+                    res = model.generate_content_async(
+                        contents,
+                        generation_config=gen_config,
+                    )
                     if asyncio.iscoroutine(res):
                         response = await res
                     else:
@@ -42,7 +56,11 @@ async def generate_with_retry(
                 else:
                     # Legacy sync path — offload to a worker thread so the
                     # event loop is never blocked.
-                    response = await asyncio.to_thread(model.generate_content, contents)
+                    response = await asyncio.to_thread(
+                        model.generate_content,
+                        contents,
+                        generation_config=gen_config,
+                    )
                 return response.text
             except Exception as e:
                 error_msg = str(e).lower()

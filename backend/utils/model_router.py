@@ -49,8 +49,22 @@ class ModelRouter:
     not per agent.
     """
 
+    # Per-phase token budget — phases that don't appear here get no cap.
+    _PHASE_MAX_TOKENS: dict[Phase, int] = {
+        Phase.RESPONSE_COMPOSITION: 150,
+        Phase.VOICE_SUMMARY: 100,
+    }
+
     _PHASE_MODELS: dict[Phase, list[str]] = {
         Phase.TRANSCRIPTION: list(FALLBACK_MODELS),
+        # RESPONSE_COMPOSITION is the Phase A Urdu reply — latency-critical,
+        # must finish well before the Vercel 60-second timeout. Route to the
+        # fastest flash-lite models and cap output at 150 tokens.
+        Phase.RESPONSE_COMPOSITION: [
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite",
+            *FALLBACK_MODELS,
+        ],
         # VOICE_SUMMARY is a non-clinical, latency-sensitive generation —
         # route to gemini-3.5-flash-lite first for the lowest possible TTS lead-in.
         Phase.VOICE_SUMMARY: ["gemini-3.5-flash-lite", *FALLBACK_MODELS],
@@ -62,6 +76,13 @@ class ModelRouter:
         if phase is None:
             return list(FALLBACK_MODELS)
         return list(cls._PHASE_MODELS.get(phase, FALLBACK_MODELS))
+
+    @classmethod
+    def max_tokens(cls, phase: Phase | None = None) -> int | None:
+        """Return the max output token cap for a phase, or None for unlimited."""
+        if phase is None:
+            return None
+        return cls._PHASE_MAX_TOKENS.get(phase)
 
 
 def sanitize_json(raw: str) -> str:
