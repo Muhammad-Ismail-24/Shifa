@@ -242,6 +242,7 @@ async def synthesize(text: str = Query(..., min_length=1, max_length=2000)):
 
 
 async def run_full_pipeline_task(session_id: str, body: AnalyzeRequest):
+    import time
     cleanup_status_store()
     pipeline_status_store[session_id] = {"status": "processing"}
     try:
@@ -257,9 +258,9 @@ async def run_full_pipeline_task(session_id: str, body: AnalyzeRequest):
                     "diseases": [],
                     "medicines": [],
                     "hospitals": [],
-                    "response_text_urdu": triage.get("question_urdu", "?? ?? ????? ?? ???? ??? ???? ???????"),
+                    "response_text_urdu": triage.get("question_urdu", "آپ کی تکلیف کے بارے میں مزید بتائیں۔"),
                     "is_emergency": False,
-                    "disclaimer_urdu": "???? ??? ???? ?????? ?? ???? ??? ???? ???????",
+                    "disclaimer_urdu": "براہ کرم اپنی علامات کے بارے میں مزید بتائیں۔",
                 }
             }
             return
@@ -271,8 +272,9 @@ async def run_full_pipeline_task(session_id: str, body: AnalyzeRequest):
             body.history,
         )
 
-        voice_summary = None
         needs_phase_b = result.pop("needs_phase_b", False)
+        top_disease = result.pop("top_disease", "Unknown")
+        symptoms = result.pop("symptoms", [])
         
         result_payload = {
             "session_id": session_id if needs_phase_b else None,
@@ -280,28 +282,30 @@ async def run_full_pipeline_task(session_id: str, body: AnalyzeRequest):
             **result
         }
 
+        # Update status immediately so frontend can unblock and show Phase A result
+        pipeline_status_store[session_id] = {
+            "status": "phase_a_ready",
+            "result": dict(result_payload)
+        }
+
         if needs_phase_b:
-            top_disease = result.pop("top_disease", "Unknown")
-            symptoms = result.pop("symptoms", [])
+            async def phase_b_wrapper():
+                v_summary = None
+                try:
+                    stage1 = await run_phase_b_stage1(top_disease, original_text=body.urdu_text)
+                    v_summary = stage1.get("voice_summary")
+                except Exception as exc:
+                    logger.error("Stage 1 voice summary failed: %s", exc)
 
-            try:
-                stage1 = await run_phase_b_stage1(
-                    top_disease,
-                    original_text=body.urdu_text,
-                )
-                voice_summary = stage1["voice_summary"]
-            except Exception as exc:
-                logger.error("Stage 1 voice summary failed: %s", exc)
-
-            result_payload["voice_summary"] = voice_summary
-            
-            task = asyncio.create_task(
-                run_phase_b(
+                pb_result = await run_phase_b(
                     top_disease, body.latitude, body.longitude,
                     diseases=result.get("diseases", []),
                     original_text=body.urdu_text,
                 )
-            )
+                pb_result["voice_summary"] = v_summary
+                return pb_result
+            
+            task = asyncio.create_task(phase_b_wrapper())
             session_store.create_session_with_id(
                 session_id,
                 task,
@@ -310,14 +314,8 @@ async def run_full_pipeline_task(session_id: str, body: AnalyzeRequest):
                     "diagnosis": top_disease,
                 },
             )
-        else:
-            result.pop("top_disease", None)
-            result.pop("symptoms", None)
             
-        pipeline_status_store[session_id] = {
-            "status": "completed",
-            "result": result_payload
-        }
+        pipeline_status_store[session_id]["status"] = "completed"
             
     except Exception as e:
         logger.error(f"Pipeline task failed: {e}")
@@ -328,9 +326,9 @@ async def run_full_pipeline_task(session_id: str, body: AnalyzeRequest):
                 "diseases": [],
                 "medicines": [],
                 "hospitals": [],
-                "response_text_urdu": "???? ????? ??? ??? ????? ??? ? ??? ??? ?????? ???? ?????",
+                "response_text_urdu": "معاف کیجئے گا، ایک خرابی پیش آ گئی ہے۔ دوبارہ کوشش کریں۔",
                 "is_emergency": False,
-                "disclaimer_urdu": "???? ??? ?????? ???? ?????"
+                "disclaimer_urdu": "براہ کرم دوبارہ کوشش کریں۔"
             }
         }
 

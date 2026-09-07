@@ -80,7 +80,7 @@ export async function analyze(payload: AnalyzeRequest): Promise<AnalyzeResponse>
       await new Promise(resolve => setTimeout(resolve, 5000));
       const { data: statusData } = await client.get<any>(`/status/${encodeURIComponent(sessionId)}`);
       
-      if (statusData.status === 'completed') {
+      if (statusData.status === 'phase_a_ready' || statusData.status === 'completed') {
         return statusData.result;
       } else if (statusData.status === 'error') {
         throw new ShifaApiError('server', 'Pipeline error');
