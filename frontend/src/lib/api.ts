@@ -65,7 +65,9 @@ export async function analyze(payload: AnalyzeRequest): Promise<AnalyzeResponse>
   }
 
   try {
-    const { data } = await client.post<AnalyzeResponse>('/analyze', payload);
+    const { data } = await client.post<AnalyzeResponse>('/analyze', payload, {
+      timeout: 120_000, // 2 min — triage + Phase A + Stage 1 voice summary
+    });
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
