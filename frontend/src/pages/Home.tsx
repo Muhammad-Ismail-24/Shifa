@@ -645,14 +645,14 @@ const InputBar = forwardRef<HTMLInputElement, InputBarProps>(function InputBar(
         <input
           ref={ref}
           type="text"
-          dir={language === 'ur' ? 'rtl' : 'ltr'}
+          dir="auto"
           lang={language === 'ur' ? 'ur' : 'en'}
           value={value}
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
           placeholder={language === 'ur' ? 'اپنی علامات لکھیں یا بولیں...' : 'Describe your symptoms...'}
           aria-label={language === 'ur' ? 'Describe your symptoms in Urdu' : 'Describe your symptoms'}
-          className="min-w-0 flex-1 bg-transparent px-3 pe-12 py-2 text-lg text-black placeholder:text-black/40 focus:outline-none disabled:opacity-50 overflow-hidden text-ellipsis whitespace-nowrap"
+          className="min-w-0 flex-1 bg-transparent px-4 py-2 text-lg text-black placeholder:text-black/40 focus:outline-none disabled:opacity-50 overflow-hidden text-ellipsis whitespace-nowrap"
           style={{ fontFamily: language === 'ur' ? "'Noto Nastaliq Urdu', serif" : 'inherit' }}
         />
 
